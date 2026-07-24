@@ -1,0 +1,39 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# claude code
+.claude/
+
+# dependencies
+/server/node_modules
+/server/dist
+/server/list.json
+/server/extractedData.json
+/front/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+/server/.env
+/server/.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+

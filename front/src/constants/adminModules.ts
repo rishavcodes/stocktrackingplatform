@@ -1,0 +1,16 @@
+export const ADMIN_MODULES = [
+  { key: "service_providers", label: "Service Providers" },
+  { key: "Experts Stats", label: "Experts Stats" },
+  { key: "customers", label: "Customers" },
+  { key: "login_activity", label: "Login Activity" },
+  { key: "all_notifications", label: "All Notifications" },
+  { key: "contact_leads", label: "Contact Leads" },
+  { key: "onboarding_issues", label: "Onboarding Issues" },
+  { key: "support_tickets", label: "Support Tickets" },
+  { key: "withdrawals", label: "Withdrawals" },
+  { key: "wallet", label: "Wallet" },
+  { key: "events", label: "Events" },
+  { key: "services", label: "Services" },
+  { key: "model_portfolio", label: "Model Portfolio" },
+  { key: "marketplace", label: "Market Place" },
+];

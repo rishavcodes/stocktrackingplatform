@@ -1,0 +1,786 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+html,body{
+  overflow-x: hidden;
+  background-color: #F0F6FF;
+  font-family: 'League Spartan', sans-serif;
+
+}
+
+
+.gradient-text-our-family-card-name {
+  background: linear-gradient(90.79deg, #00A082 -2.68%, #0190B6 102.21%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+ 
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+ 
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+ 
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+ 
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+ 
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+ 
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+ 
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+
+
+
+@layer components {
+  /* .my-react-select-container {
+  } */
+  .my-react-select-container .my-react-select__control {
+    @apply bg-white dark:bg-blackShade border-2 border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500;
+  }
+
+  .my-react-select-container .my-react-select__control--is-focused {
+    @apply border-neutral-500 hover:border-neutral-500 dark:border-neutral-400 dark:hover:border-neutral-400 shadow-none;
+  }
+
+  .my-react-select-container .my-react-select__menu {
+    @apply bg-neutral-100 dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600;
+  }
+
+  .my-react-select-container .my-react-select__option {
+    @apply text-neutral-600 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-800;
+  }
+  /* .my-react-select-container .my-react-select__option--is-focused {
+    @apply bg-neutral-200 dark:bg-neutral-800;
+  } */
+
+  .my-react-select-container .my-react-select__indicator-separator {
+    @apply bg-neutral-400;
+  }
+
+  .my-react-select-container .my-react-select__input-container,
+  .my-react-select-container .my-react-select__placeholder,
+  .my-react-select-container .my-react-select__single-value {
+    @apply text-neutral-600 dark:text-neutral-200;
+  }
+}
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+ }
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+/* Hide scrollbar entirely — used by horizontal mobile chip rails so the
+   row scrolls cleanly without an ugly track underneath. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+
+ /* hero section */
+ .hero-gradient {
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+   padding-top: 64px;
+   position: relative;
+   overflow: hidden;
+ }
+
+ .hero-gradient::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+   pointer-events: none;
+ }
+
+ .hero-content {
+   position: relative;
+   z-index: 1;
+ }
+
+ .hero-title {
+   background: linear-gradient(135deg, #1a1a1a 0%, #4f46e5 50%, #3b82f6 100%);
+   -webkit-background-clip: text;    
+   -webkit-text-fill-color: transparent;
+ }
+
+
+
+ .hero-button-primary:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+ }
+
+ .hero-button-secondary {
+   transition: transform 0.2s ease-in-out;
+   backdrop-filter: blur(10px);
+   background: rgba(255, 255, 255, 0.2);
+   border: 2px solid rgba(79, 70, 229, 0.3);
+ }
+
+ .hero-button-secondary:hover {
+   transform: translateY(-2px);
+   background: rgba(255, 255, 255, 0.3);
+ }
+
+
+ /* faq section */
+ .faq-section {
+   background: linear-gradient(135deg, #f6f8ff 0%, #ffffff 100%);
+ }
+
+ .faq-container {
+   display: flex;
+   gap: 3rem;
+   align-items: flex-start;
+ }
+
+ .faq-questions {
+   flex: 2;
+ }
+
+ .faq-ask {
+   flex: 1;
+   position: sticky;
+   top: 2rem;
+ }
+
+ .faq-item {
+   transition: all 0.3s ease-in-out;
+   border: 1px solid rgba(79, 70, 229, 0.1);
+ }
+
+ .faq-item:hover {
+   border-color: rgba(79, 70, 229, 0.3);
+   box-shadow: 0 5px 15px rgba(79, 70, 229, 0.1);
+ }
+
+ .faq-question {
+   cursor: pointer;
+   transition: all 0.3s ease-in-out;
+ }
+
+ .faq-question:hover {
+   color: #4f46e5;
+ }
+
+ .faq-icon {
+   transition: transform 0.3s ease-in-out;
+ }
+
+ .faq-icon.open {
+   transform: rotate(180deg);
+ }
+
+ .faq-answer {
+   max-height: 0;
+   overflow: hidden;
+   transition: max-height 0.3s ease-in-out;
+ }
+
+ .faq-answer.open {
+   max-height: 200px;
+ }
+
+ .ask-form {
+   background: rgba(255, 255, 255, 0.8);
+   backdrop-filter: blur(10px);
+   border: 1px solid rgba(79, 70, 229, 0.1);
+   border-radius: 1rem;
+   padding: 2rem;
+ }
+
+ .ask-form input,
+ .ask-form textarea {
+   border: 1px solid rgba(79, 70, 229, 0.2);
+   border-radius: 0.5rem;
+   padding: 0.75rem;
+   width: 100%;
+   transition: border-color 0.3s ease-in-out;
+ }
+
+ .ask-form input:focus,
+ .ask-form textarea:focus {
+   outline: none;
+   border-color: #4f46e5;
+   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+ }
+
+ @media (max-width: 768px) {
+   .faq-container {
+     flex-direction: column;
+   }
+
+   .faq-ask {
+     position: static;
+   }
+ }
+
+
+
+ /* Hexagon clip-path for logo */
+.clip-path-hexagon {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* 3D Perspective for card flipping */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Dark theme as default */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 259 94% 51%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 259 94% 51%;
+
+    --radius: 0.5rem;
+
+    /* Custom color tokens for dark theme */
+    --tradebox-background: 240 10% 3.9%;
+    --tradebox-secondary: 240 5% 10.2%;
+    --tradebox-surface: 240 6% 13%;
+
+    /* Gradient colors */
+    --gradient-purple: 259 94% 51%;
+    --gradient-cyan: 189 94% 57%;
+    --gradient-pink: 323 73% 64%;
+    --gradient-blue: 217 91% 60%;
+
+    /* Glass morphism for dark theme */
+    --glass-bg: 240 6% 13% / 0.8;
+    --glass-border: 240 10% 25% / 0.3;
+
+    /* Brand colors */
+    --brand-primary: 259 94% 51%;
+    --brand-secondary: 189 94% 57%;
+    --brand-accent: 323 73% 64%;
+  }
+
+  .light {
+    /* Light theme */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 96%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 96%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 259 94% 51%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 259 94% 51%;
+
+    /* Custom color tokens for light theme */
+    --tradebox-background: 0 0% 96%;
+    --tradebox-secondary: 210 40% 98%;
+    --tradebox-surface: 210 40% 96%;
+
+    /* Glass morphism for light theme */
+    --glass-bg: 0 0% 96% / 0.95;
+    --glass-border: 214.3 31.8% 91.4% / 0.5;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Montserrat", "Arial", sans-serif;
+    font-weight: 400; /* Regular for body text */
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Montserrat", "Arial", sans-serif;
+    font-weight: 700; /* Bold for headings */
+  }
+
+  .font-montserrat-regular {
+    font-family: "Montserrat", "Arial", sans-serif;
+    font-weight: 400;
+  }
+
+  .font-montserrat-semibold {
+    font-family: "Montserrat", "Arial", sans-serif;
+    font-weight: 600;
+  }
+
+  .font-montserrat-bold {
+    font-family: "Montserrat", "Arial", sans-serif;
+    font-weight: 700;
+  }
+
+  .font-montserrat-extrabold {
+    font-family: "Montserrat", "Arial", sans-serif;
+    font-weight: 800;
+  }
+
+  /* Light theme specific text colors for trading infographic */
+  .light .trading-text-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  .light .trading-subtext-dark {
+    color: hsl(220 13% 18%) !important;
+  }
+
+  .light .trading-category-dark {
+    color: hsl(0 0% 20%) !important;
+  }
+
+  .light .trading-metric-text-dark {
+    color: hsl(0 0% 15%) !important;
+  }
+
+  /* Light theme specific text colors for hero section */
+  .light .hero-text-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  .light .hero-description-dark {
+    color: hsl(220 13% 15%) !important;
+  }
+
+  .light .hero-gradient-black {
+    background: hsl(0 0% 0%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  /* Light theme border for trading infographic */
+  .light .infographic-border-dark {
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  /* Light theme navbar background - match page background */
+  .light .navbar-skyblue {
+    background: hsl(0 0% 96% / 0.9) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  /* Light theme text colors for all sections */
+  .light .section-title-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  .light .section-subtitle-dark {
+    color: hsl(220 13% 25%) !important;
+  }
+
+  .light .section-text-dark {
+    color: hsl(0 0% 15%) !important;
+  }
+
+  .light .card-title-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  .light .card-description-dark {
+    color: hsl(220 13% 30%) !important;
+  }
+
+  .light .stat-label-dark {
+    color: hsl(220 13% 25%) !important;
+  }
+
+  .light .stat-value-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  /* Light theme borders for feature cards */
+  .light .feature-card-border-dark {
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  /* Light theme borders for other sections */
+  .light .onboarding-card-border-dark {
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  .light .stats-card-border-dark {
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  .light .integration-card-border-dark {
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  .light .serve-card-border-dark {
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  .light .faq-card-border-dark {
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  /* Light theme icon colors */
+  .light .stats-icon-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  .light .serve-icon-dark {
+    color: hsl(0 0% 20%) !important;
+  }
+
+  .light .serve-icon-dark {
+    background-color: hsl(0 0% 20%) !important;
+  }
+
+  .light .serve-border-dark {
+    border-color: hsl(0 0% 20%) !important;
+  }
+
+  .light .serve-stroke-dark {
+    stroke: hsl(0 0% 20%) !important;
+  }
+
+  /* Light theme bar graphs - make gradient bars white */
+  .light .bg-gradient-primary {
+    background: hsl(0 0% 100%) !important;
+  }
+
+  /* Light theme progress bars - make gray background white */
+  .light .bg-gray-700 {
+    background-color: hsl(0 0% 100%) !important;
+  }
+
+  /* Light theme pagination dots - make gray dots white */
+  .light .bg-gray-300 {
+    background-color: hsl(0 0% 100%) !important;
+  }
+
+  .light .bg-gray-400 {
+    background-color: hsl(0 0% 90%) !important;
+  }
+
+  .light .bg-gray-600 {
+    background-color: hsl(0 0% 100%) !important;
+  }
+
+  .light .bg-gray-500 {
+    background-color: hsl(0 0% 90%) !important;
+  }
+
+  /* Light theme - hide moving clock on infographic */
+  .light .infographic-clock-icon {
+    display: none !important;
+  }
+
+  /* Light theme testimonial cards */
+  .light .testimonial-card-light {
+    background: hsl(0 0% 100%) !important;
+    border: 2px solid hsl(0 0% 60%) !important;
+  }
+
+  .light .testimonial-icon-dark {
+    background: hsl(0 0% 0%) !important;
+  }
+
+  .light .testimonial-text-dark {
+    color: hsl(0 0% 100%) !important;
+  }
+
+  .light .testimonial-quote-dark {
+    color: hsl(220 13% 15%) !important;
+  }
+
+  .light .testimonial-name-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  .light .testimonial-designation-dark {
+    color: hsl(220 13% 25%) !important;
+  }
+
+  /* Light theme feature icon colors - lighter shade */
+  .light .feature-icon-dark {
+    color: hsl(0 0% 30%) !important;
+  }
+
+  .light .onboarding-icon-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  .light .integration-icon-dark {
+    color: hsl(0 0% 0%) !important;
+  }
+
+  /* Light theme trading infographic borders */
+  .light .algo-trading-border-blue {
+    border-color: hsl(217 91% 60%) !important;
+  }
+
+  .light .metric-left-border-green {
+    border-color: hsl(142 76% 36%) !important;
+  }
+
+  .light .metric-right-border-red {
+    border-color: hsl(0 84% 60%) !important;
+  }
+
+  /* Light theme 15 minutes text */
+  .light .minutes-text-dark {
+    background: hsl(0 0% 0%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: hsl(0 0% 0%) !important;
+  }
+
+  /* Light theme market data card borders */
+  .light .market-data-card {
+    border-color: hsl(0 0% 60%) !important;
+  }
+
+  .light .market-data-card:hover {
+    border-color: hsl(0 0% 50%) !important;
+  }
+
+  /* Light theme section titles - make dark grey (between grey and black) */
+  .light .section-title-dark {
+    background: hsl(0 0% 20%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: hsl(0 0% 20%) !important;
+  }
+
+  /* Light theme card titles - make dark grey (between grey and black) */
+  .light .card-title-dark {
+    color: hsl(0 0% 20%) !important;
+  }
+}
+
+
+
+
+
+
+/* globals.css */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+
+/* nprogress.css overrides */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: #22c55e;
+  /* ✅ Tradebox green */
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+}
+
+/* Optional smoother animation */
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px #22c55e, 0 0 5px #22c55e;
+  opacity: 1.0;
+  transform: rotate(3deg) translate(0px, -4px);
+}
+
+
+
+
+
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+  background-size: 200% 100%;
+}

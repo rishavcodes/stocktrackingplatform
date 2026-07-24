@@ -1,0 +1,89 @@
+#,Category,Notification Name,When it happens (Trigger),Who receives it,How they receive it,What they see / What it says,Frequency,Status
+1,Birthdays,Customer birthday wish,A customer's date of birth matches today,The customer,In-app,A birthday wish from each Research Analyst they are subscribed to,Daily at 9:00 AM IST,Active
+2,Birthdays,Research Analyst birthday wish,A Research Analyst's date of birth matches today,The Research Analyst,In-app,A birthday wish from Tradebox,Daily at 9:00 AM IST,Active
+3,Events,Event reminder (7 / 3 / 1 / 0 days before),An event is upcoming,Everyone who registered for the event,Email + In-app,Event title, date, mode (online/offline), and location or link,Daily at 10:00 AM IST,Active
+4,Wallet,Low wallet balance alert,Research Analyst's Tradebox wallet falls below ₹500,The Research Analyst,Email + In-app,Low balance warning with a recharge call-to-action,Daily at 9:00 AM IST,Paused
+5,Profile,Complete your profile reminder,User is missing PAN or Aadhaar,The user,In-app,Prompt to complete PAN / Aadhaar details,Mondays 10:00 AM IST (max once per 7 days),Active
+6,Plans,Plan expiring reminder (5 / 3 / 1 / 0 days before),A purchased plan is about to expire,The customer,Email + Telegram DM + In-app,Renewal reminder with a "Renew Now" button,Daily at 9:00 AM IST,Active
+7,Plans,Plan expired,A purchased plan has expired,The customer,Email + Telegram DM + In-app,Expiry confirmation; user is also removed from the Telegram channel,Daily at 11:00 PM IST,Active
+8,Plans,Free trial expiring / expired,Free trial is ending within 1 day or already over,The customer,Email + In-app,Free trial expiry warning,Every 4 hours,Active
+9,Portfolio,Daily portfolio report,Market close (post 5:30 PM),Every portfolio subscriber,Email,Branded email with a link to download the day's portfolio PDF,Daily at 5:33 PM IST,Active
+10,Payments,Order placed (customer to RA),A customer purchases or renews a plan from a Research Analyst,The Research Analyst,In-app,"""<Customer name> has purchased / renewed your plan <Plan name>"" — with View Lead button",Real-time on purchase,Active
+11,Payments,Manual payment uploaded,Customer uploads a payment proof for manual verification,The Research Analyst,In-app,"""New order from <Customer> for <Plan> — Payment proof uploaded, pending verification""",Real-time on upload,Active
+12,Payments,Manual payment uploaded (marketplace),Marketplace order with manual payment is submitted,The Research Analyst,In-app,Same as above for marketplace orders,Real-time on upload,Active
+13,Payments,Payment verified,Order payment confirmed (gateway or after manual approval),The customer,In-app,"""Your payment for <Plan> has been verified. Your subscription is now active!"" — with View Receipt button",Real-time on verification,Active
+14,Payments,Order confirmation email,Gateway payment is processed,The customer,Email,Invoice details + Telegram channel join link,Real-time on payment,Active
+15,Payments,Marketplace order email,Marketplace order is processed,The customer,Email,Order confirmation,Real-time on payment,Active
+16,Payments,Payment confirmation + Telegram invite,Order is fully verified,The customer,Email,Subscription details and Telegram channel join link,Real-time on verification,Active
+17,Payments,Verified order email (service / portfolio / package),Order is verified,The customer,Email,Subscription/order confirmation,Real-time on verification,Active
+18,Payments,Verified marketplace order email,Marketplace order is verified,The customer,Email,Subscription/order confirmation,Real-time on verification,Active
+19,Payments,Payment rejected (in-app),Manual payment is rejected by admin/RA,The customer,In-app,"""Your payment for <Plan> has been rejected. Reason: <reason>"" — with View Details button",Real-time on rejection,Active
+20,Payments,Payment rejected (email),Manual payment is rejected,The customer,Email,"Subject: ""Payment Rejected - <Plan>"" with reason",Real-time on rejection,Active
+21,Payments,Auto-renewal confirmation,UPI auto-pay subscription is renewed,The customer (and optionally RA),Email,"""Auto-Renewal Confirmation for <Plan>"" with details + Telegram link",Real-time on auto-renewal,Active
+22,Payments,Promo code claimed,A customer claims a promo code,Admin,Telegram (admin channel),"""<Customer> has claimed <Coupon> for <Plan>""",Real-time on claim,Active
+23,Wallet,Commission / onboarding charge debited,Commission is taken from RA wallet,The Research Analyst,In-app,"""₹<amount> debited from wallet — <reason>. New balance: ₹<balance>""",Real-time on debit,Active
+24,Wallet,Marketplace commission debited,Marketplace commission deduction,The Research Analyst,In-app,Wallet debit message,Real-time on debit,Active
+25,Wallet,Broker commission credited,Broker commission credited to RA,The Research Analyst,In-app,Wallet credit message,Real-time on credit,Active
+26,Wallet,RA wallet reduced (broker),Broker commission reduction from RA wallet,The Research Analyst,In-app,Wallet debit message,Real-time,Active
+27,Wallet,Tradebox plan payment credited,Tradebox plan payment processed,The Research Analyst,In-app,Wallet credit message,Real-time,Active
+28,Wallet,Broker order wallet deduction,Commission deducted for a broker order,The Research Analyst,In-app,Wallet debit message,Real-time,Active
+29,Wallet,Wallet split (RA / broker),Payment is split between RA and broker,The Research Analyst,In-app,Wallet update message,Real-time,Active
+30,Wallet,Auto-renewal charge deducted,Auto-renewal commission charged,The Research Analyst,In-app,Wallet debit message,Real-time on auto-renewal,Active
+31,Wallet,Admin debit from wallet,Admin manually deducts from RA wallet,The Research Analyst,In-app,Wallet debit message,Real-time on admin action,Active
+32,Wallet,Admin credit to wallet,Admin manually adds to RA wallet,The Research Analyst,In-app,Wallet credit message,Real-time on admin action,Active
+33,Content,New article — to followers,A Research Analyst publishes a new article,Followers of the RA,In-app,"""<RA name> posted a new article"" — with View Article button",Real-time on publish,Active
+34,Content,New article — admin alert,A Research Analyst publishes a new article,Admin,Telegram (admin channel),"""<RA> has uploaded a new article under category <category>""",Real-time on publish,Active
+35,Content,New article — public announcement,Article marked to share with everyone,Tradebox public Telegram channel,Telegram (public channel),Article title + author + link with thumbnail,Real-time on publish,Active
+36,Content,New article — plan subscribers,Article shared with specific plan subscribers,Subscribers of that plan,In-app,"""<RA> shared a new article with plan <Plan>""",Real-time on publish,Active
+37,Content,New article — service channel,Article shared to a plan,Members of the plan's Telegram service channel,Telegram (service channel),Article details message,Real-time on publish,Active
+38,Content,New video — to followers,A Research Analyst publishes a new video,Followers of the RA,In-app,"""<RA name> posted a new video"" — with Watch Video button",Real-time on publish,Active
+39,Content,New video — admin alert,A Research Analyst publishes a new video,Admin,Telegram (admin channel),Admin notification,Real-time on publish,Active
+40,Content,New video — public announcement,Video published publicly,Public Telegram channel,Telegram (public channel),Video details with thumbnail,Real-time on publish,Active
+41,Content,New podcast — to followers,A Research Analyst publishes a new podcast,Followers of the RA,In-app,"""<RA name> posted a new podcast"" — with Listen Now button",Real-time on publish,Active
+42,Content,New podcast — admin alert,A Research Analyst publishes a new podcast,Admin,Telegram (admin channel),Admin notification,Real-time on publish,Active
+43,Content,New podcast — public announcement,Podcast published publicly,Public Telegram channel,Telegram (public channel),Podcast details with thumbnail,Real-time on publish,Active
+44,Events,New event — admin approval request,A Research Analyst creates a new event,Admin,Telegram (admin channel),"""<RA> has uploaded a new event under category <category>, please approve!""",Real-time on creation,Active
+45,Events,New event — to followers,A Research Analyst creates a new event,Followers of the RA,In-app,"""<RA> scheduled a new event: <Event>"" — with View Event button",Real-time on creation,Active
+46,Recommendations,New recommendation — admin alert,A Research Analyst uploads a recommendation,Admin,Telegram (admin channel),"""<RA> has uploaded a new Recommendation""",Real-time on upload,Active
+47,Recommendations,New recommendation — service channel,New recommendation uploaded,Members of the plan's Telegram service channel,Telegram (service channel),Recommendation details / scorecard message,Real-time on upload,Active
+48,Recommendations,Scorecard updated — service channel,A recommendation is modified,Members of the plan's Telegram service channel,Telegram (service channel),Updated scorecard message,Real-time on update,Active
+49,Recommendations,Trade exit — service channel,A trade exits (target / stop-loss / timeout),Members of the plan's Telegram service channel,Telegram (service channel),Exit details with P/L,Real-time on exit,Active
+50,Recommendations,Scorecard modified — service channel,A scorecard is modified,Members of the plan's Telegram service channel,Telegram (service channel),Modification details,Real-time on modification,Active
+51,Recommendations,Scorecard PDF report,A scorecard is published or updated,Subscribers of the service plan,Email,Scorecard / recommendation PDF report,Real-time on publish/update,Active
+52,Recommendations,Trade closed — Telegram exit message (system tracker),Trade auto-exits via global price tracker,Members of all linked plan Telegram channels,Telegram (service channel),"Symbol, exit price, P/L %, reason (SL / TP / target hit / timeout)",Real-time on price hit,Active
+53,Recommendations,Trade closed — subscribers in-app,Trade auto-exits,All subscribers of the trade's plans,In-app,"""Target hit / Stop-loss hit / Exited on validity on <symbol>. P/L: <%>"" — with View Outcome button",Real-time on price hit,Active
+54,Recommendations,WhatsApp — new recommendation,A new recommendation is published,Subscribers who connected WhatsApp,WhatsApp,"WhatsApp template ""new_recommendation"" with trade details",Real-time on publish,Active
+55,Recommendations,WhatsApp — trade change,A trade is updated,Subscribers who connected WhatsApp,WhatsApp,"WhatsApp template ""trade_change"" with updated details",Real-time on change,Active
+56,Users,Follow Research Analyst,A user starts following a Research Analyst,Admin,Telegram (admin channel),"""<User> started following <RA>""",Real-time on follow,Active
+57,Events,Event registration — confirmation,User registers for an event,The user,Email,"Subject ""Event Registration Confirmation"" with mode (online/offline) and details",Real-time on registration,Active
+58,Events,Event registration — RA notified,User registers for an event,The Research Analyst (event author),In-app,"""<User> subscribed to your <Event> event (<mode>)""",Real-time on registration,Active
+59,Events,Event registration — admin alert,User registers for an event,Admin,Telegram (admin channel),Admin notification,Real-time on registration,Active
+60,Auth,Email verification OTP,User requests email verification,The user,Email,"Subject ""TradeBox - Verify Your Email"" with 4-digit OTP (valid 10 min)",Real-time on request,Active
+61,Auth,Registration OTP — email,User requests email OTP at signup,The user,Email,"Subject ""TradeBox OTP"" with 4-digit OTP (valid 10 min)",Real-time on request,Active
+62,Auth,Registration OTP — SMS,User requests OTP at signup with mobile number,The user,SMS,"""Your Mobile no verification code is <OTP>. This is valid for 10 minutes. - Tradebox RA""",Real-time on request,Active
+63,Auth,Password reset OTP,User requests password reset,The user,Email,"Subject ""TradeBox Password Reset OTP"" with 4-digit OTP (valid 10 min)",Real-time on request,Active
+64,Auth,Provider signup — admin alert,A new Research Analyst signs up,Admin,Telegram (admin channel),"""<RA> registered as <type>""",Real-time on signup,Active
+65,Auth,Provider signup — welcome email,A new Research Analyst signs up,The Research Analyst,Email,"""Welcome to TradeBox"" welcome email",Real-time on signup,Active
+66,Broker (Bigul),Trade placed,Bigul order placed successfully,The user (trader),In-app,"""Your order for <order details> has been placed.""",Real-time on order,Active
+67,Broker (Bigul),Trade rejected,Bigul order failed,The user,In-app,"""Your order for <order details> was rejected. <error>""",Real-time on rejection,Active
+68,Broker (Bigul),Trade error,Network or API error placing Bigul order,The user,In-app,"""Your order could not be placed. <error>""",Real-time on error,Active
+69,Broker (Bigul),Trade modified,Bigul order modified,The user,In-app,"""Your order for <order details> has been modified.""",Real-time on modification,Active
+70,Broker (AliceBlue),Trade placed,AliceBlue order placed,The user,In-app,Order placed confirmation,Real-time on order,Active
+71,Broker (AliceBlue),Trade rejected,AliceBlue order failed,The user,In-app,Order rejected message,Real-time on rejection,Active
+72,Broker (AliceBlue),Trade error,Network or API error with AliceBlue,The user,In-app,Order error message,Real-time on error,Active
+73,Broker (AliceBlue),Trade modified,AliceBlue order modified,The user,In-app,Order modified confirmation,Real-time on modification,Active
+74,Broker (AliceBlue),Trade cancelled,AliceBlue order cancelled,The user,In-app,Order cancelled confirmation,Real-time on cancel,Active
+75,Support,Support ticket — admin notification,A support ticket is created or updated,All active admins,In-app,Support ticket update,Real-time on ticket activity,Active
+76,Support,Support ticket — RA notification,Support ticket activity involves an RA,The Research Analyst,In-app,Support ticket update,Real-time on ticket activity,Active
+77,Admin actions,Research Analyst verified,Admin verifies an RA profile,The Research Analyst,In-app,"""Congratulations on successfully registering with us…""",Real-time on verification,Active
+78,Admin actions,RA registration — email,RA is registered (normal or sub-profile),The Research Analyst,Email,"""Welcome to TradeBox!"" with onboarding info",Real-time on registration,Active
+79,Admin actions,RA profile update — email,RA's profile is updated,The Research Analyst,Email,Profile update confirmation,Real-time on update,Active
+80,Admin actions,RA verification — email,RA is verified by admin,The Research Analyst,Email,Verification confirmation + SLA agreement,Real-time on verification,Active
+81,Admin actions,Broadcast notification,Admin sends a manual broadcast,Users or Providers (as targeted by admin),In-app,Announcement text with optional call-to-action and link,Real-time on broadcast,Active
+82,Admin actions,Membership activated — admin record,Tradebox plan activated for an RA,Admins,In-app,"""<Plan> has been added to Research Analyst <RA>""",Real-time on activation,Active
+83,Admin actions,Membership activated — RA,Tradebox plan activated for an RA,The Research Analyst,In-app,"""Your <Plan> membership is now active!""",Real-time on activation,Active
+84,Admin actions,Tradebox plan purchase — email,RA purchases a Tradebox plan,The Research Analyst,Email,Invoice + plan details,Real-time on purchase,Active
+85,Admin actions,Tradebox plan upgrade — email,RA upgrades their Tradebox plan,The Research Analyst,Email,Upgrade confirmation,Real-time on upgrade,Active
+86,Invoices,Tradebox plan invoice,RA purchase of Tradebox plan,The Research Analyst,Email,"""Invoice for <Plan> purchase"" with attached PDF invoice",Real-time on purchase,Active
+87,Invoices,Service-purchase invoice (PDF stored),Customer purchases a service plan,Stored on order (link available in profile),File (no email sent here),PDF invoice link saved on the order,Real-time on purchase,Active
+88,E-sign,E-sign completed,An e-sign session is completed,The Research Analyst,Email,E-sign completion confirmation,Real-time on completion,Active
