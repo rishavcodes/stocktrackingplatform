@@ -17,13 +17,6 @@ RUN npm run build
 # Stage 2
 
 FROM node:20-slim as runner
-
-# 🔥 Install LibreOffice (required for DOCX → PDF)
-RUN apt-get update && \
-    apt-get install -y libreoffice && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
 COPY --from=builder build/package*.json .
