@@ -377,7 +377,7 @@ export default function ProviderSigninContainer() {
                     return;
                 }
 
-                router.push("/dashboard/serviceprovider");
+                router.push("/dashboard/serviceprovider/overview");
                 return;
             }
 

@@ -50,11 +50,30 @@ const nextConfig = {
   // the HTTPS Vercel frontend, which would otherwise cause a
   // Mixed Content error.
   //
+  // IMPORTANT — the proxy must NOT swallow Next.js's own API routes.
+  // `[...nextauth]` and `admin/impersonate/*` are *dynamic* routes, and
+  // dynamic routes are matched AFTER rewrites, so a bare `/api/:path*`
+  // catch-all wins over them and proxies NextAuth to Express — which
+  // answers `Cannot GET /api/auth/session` and breaks every login.
+  //
+  // We cannot simply exclude the whole `/api/auth` namespace: the Express
+  // backend mounts its own routes there too (requestoptformobile,
+  // checkotpnumber, getuserdata, signin, …). So the negative lookahead
+  // below excludes only NextAuth's *reserved* sub-paths, everything else
+  // under /api/auth still proxies to the backend.
+  //
+  // Note `signin` is deliberately NOT excluded — that one belongs to the
+  // backend. NextAuth never needs it because `pages.signIn` in
+  // src/middleware.ts points at /auth/provider/signin instead.
+  //
   async rewrites() {
+    const NEXTAUTH_RESERVED =
+      'session|csrf|providers|signout|error|verify-request|_log|callback'
+
     return [
       {
-        source: '/api/:path*',
-        destination: 'http://13.204.148.45:8080/api/:path*',
+        source: `/api/:path((?!auth/(?:${NEXTAUTH_RESERVED})|admin/impersonate).*)`,
+        destination: 'http://13.204.148.45:8080/api/:path',
       },
     ]
   },
