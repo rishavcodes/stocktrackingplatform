@@ -3,6 +3,45 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/slices/authSlice";
 
+/**
+ * Absolute backend origin for the SERVER-SIDE fetches in this file.
+ *
+ * NEXT_PUBLIC_BACKEND_URL is deliberately left EMPTY on Vercel: it gets inlined
+ * into the browser bundle, and an empty value makes every client-side call
+ * relative (`/api/auth/checkotpnumber`) so it flows through the `/api` proxy
+ * rewrite in next.config.js instead of being blocked as mixed content.
+ *
+ * That trick breaks server-side fetch, which rejects relative URLs outright —
+ * which is why authorize() was returning null and NextAuth answered 401 on
+ * /api/auth/callback/credentials. Server code needs a real absolute origin, so
+ * set BACKEND_INTERNAL_URL (server-only, no NEXT_PUBLIC_ prefix).
+ *
+ * Falls back to NEXT_PUBLIC_BACKEND_URL (local dev sets it in .env.local), then
+ * to NEXTAUTH_URL — routing back through our own /api proxy, which reaches the
+ * same backend at the cost of one extra hop.
+ */
+const BACKEND_URL =
+  process.env.BACKEND_INTERNAL_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  process.env.NEXTAUTH_URL ||
+  "";
+
+/**
+ * `.tradeboxlive.com` when NEXTAUTH_URL points at that domain (so the session
+ * is shared with branded subdomains), otherwise undefined → host-scoped cookie.
+ */
+const SESSION_COOKIE_DOMAIN = (() => {
+  if (process.env.NODE_ENV !== "production") return undefined;
+  try {
+    const host = new URL(process.env.NEXTAUTH_URL ?? "").hostname;
+    return host === "tradeboxlive.com" || host.endsWith(".tradeboxlive.com")
+      ? ".tradeboxlive.com"
+      : undefined;
+  } catch {
+    return undefined;
+  }
+})();
+
 export const options: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -44,7 +83,7 @@ export const options: NextAuthOptions = {
             // so customer impersonation looks up UserModel instead.
             const typeParam = payload.role === "user" ? "&type=user" : "";
             const res = await fetch(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/getuserdata?id=${payload.id}${typeParam}`,
+              `${BACKEND_URL}/api/auth/getuserdata?id=${payload.id}${typeParam}`,
               { headers: { Authorization: `Bearer ${credentials.impersonateToken}` } },
             );
             if (!res.ok) return null;
@@ -81,7 +120,7 @@ export const options: NextAuthOptions = {
             body.expiresAt = Number(credentials.expiresAt);
           }
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/signin`,
+            `${BACKEND_URL}/api/auth/signin`,
             {
               method: "POST",
               body: JSON.stringify(body),
@@ -100,7 +139,7 @@ export const options: NextAuthOptions = {
         }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/signin`,
+          `${BACKEND_URL}/api/auth/signin`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -124,9 +163,15 @@ export const options: NextAuthOptions = {
   jwt: {
     maxAge: 60 * 60 * 24, // 1 day
   },
-  // Scope the session cookie to `.tradeboxlive.com` in production so a user
-  // signed in on the apex stays signed in on broker subdomains like
-  // `bigul.tradeboxlive.com`. Local dev keeps the default (host-scoped) cookie.
+  // Scope the session cookie to `.tradeboxlive.com` ONLY when we are actually
+  // deployed there, so a user signed in on the apex stays signed in on broker
+  // subdomains like `bigul.tradeboxlive.com`.
+  //
+  // Anywhere else (localhost, *.vercel.app, any other host) the domain must be
+  // left undefined so the cookie is host-scoped. A browser silently DROPS a
+  // Set-Cookie whose Domain doesn't match the current host — hardcoding
+  // `.tradeboxlive.com` in every production build meant a successful login on
+  // e.g. stocktrackingplatform.vercel.app set no session cookie at all.
   cookies: {
     sessionToken: {
       name:
@@ -138,10 +183,7 @@ export const options: NextAuthOptions = {
         sameSite: "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production",
-        domain:
-          process.env.NODE_ENV === "production"
-            ? ".tradeboxlive.com"
-            : undefined,
+        domain: SESSION_COOKIE_DOMAIN,
       },
     },
   },
@@ -216,7 +258,7 @@ export const options: NextAuthOptions = {
       ) {
         try {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/getuserdata?id=${token.id}`,
+            `${BACKEND_URL}/api/auth/getuserdata?id=${token.id}`,
           );
           if (res.ok) {
             const data = await res.json();
