@@ -8,7 +8,7 @@ import { BIGUL_SESSION_KEY, BROKER_SESSION_TTL_MS } from "@/lib/brokerSession";
 
 /** `state` value sent when the Bigul connect flow is started from the dashboard. */
 export const DASHBOARD_BROKER_STATE = "dashboard-broker";
-const DASHBOARD_BROKER_PATH = "/dashboard/user/broker";
+const DASHBOARD_BROKER_PATH = "/dashboard/serviceprovider/recommendations";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 

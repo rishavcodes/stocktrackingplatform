@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getServerSession } from "next-auth/next";
-import { Navbar } from "@/components";
 import { Toaster } from "@/components/ui/toaster";
 import { options } from "./api/auth/[...nextauth]/options";
-import { NavbarWrapper } from "./NavbarWrapper";
 import { SessionProviders, StoreProviders, ThemeProviders } from "./Providers";
 export const metadata: Metadata = {
 	title: "TradeBox",
@@ -138,7 +136,6 @@ export default async function RootLayout({
 				<SessionProviders session={session}>
 					<ThemeProviders>
 						<StoreProviders>
-							<NavbarWrapper />
 							<Toaster />
 							{children}
 						</StoreProviders>

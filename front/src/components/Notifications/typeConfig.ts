@@ -55,7 +55,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-50 dark:bg-blue-900/20",
     label: "Service",
-    defaultPath: "/dashboard/user/subscribedservices",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Service",
   },
   contact: {
@@ -71,7 +71,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-purple-600 dark:text-purple-400",
     bg: "bg-purple-50 dark:bg-purple-900/20",
     label: "Event",
-    defaultPath: "/dashboard/user/events",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Event",
   },
   admin: {
@@ -103,7 +103,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-indigo-600 dark:text-indigo-400",
     bg: "bg-indigo-50 dark:bg-indigo-900/20",
     label: "Membership",
-    defaultPath: "/dashboard/user/billing",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Membership",
   },
   "payment-verification": {
@@ -111,7 +111,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-orange-600 dark:text-orange-400",
     bg: "bg-orange-50 dark:bg-orange-900/20",
     label: "Payment",
-    defaultPath: "/dashboard/user/billing",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Receipt",
   },
   "payment-verified": {
@@ -119,7 +119,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-900/20",
     label: "Verified",
-    defaultPath: "/dashboard/user/billing",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Receipt",
   },
   "payment-rejected": {
@@ -127,7 +127,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-red-600 dark:text-red-400",
     bg: "bg-red-50 dark:bg-red-900/20",
     label: "Rejected",
-    defaultPath: "/dashboard/user/billing",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Details",
   },
 
@@ -137,7 +137,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-50 dark:bg-blue-900/20",
     label: "Recommendation",
-    defaultPath: "/dashboard/user/recommendations",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Recommendation",
   },
   "recommendation-closed": {
@@ -145,7 +145,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-900/20",
     label: "Outcome",
-    defaultPath: "/dashboard/user/recommendations",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Outcome",
   },
   "portfolio-update": {
@@ -153,7 +153,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-violet-600 dark:text-violet-400",
     bg: "bg-violet-50 dark:bg-violet-900/20",
     label: "Portfolio",
-    defaultPath: "/dashboard/user/portfolio",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Portfolio",
   },
   "content-added": {
@@ -161,7 +161,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-teal-600 dark:text-teal-400",
     bg: "bg-teal-50 dark:bg-teal-900/20",
     label: "Content",
-    defaultPath: "/dashboard/user/subscribedservices",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "Open",
   },
   "event-update": {
@@ -169,7 +169,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-purple-600 dark:text-purple-400",
     bg: "bg-purple-50 dark:bg-purple-900/20",
     label: "Event",
-    defaultPath: "/dashboard/user/events",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Event",
   },
 
@@ -179,7 +179,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-900/20",
     label: "Trade",
-    defaultPath: "/dashboard/user/orders",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Order",
   },
   "trade-rejected": {
@@ -187,7 +187,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-red-600 dark:text-red-400",
     bg: "bg-red-50 dark:bg-red-900/20",
     label: "Trade",
-    defaultPath: "/dashboard/user/orders",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "Retry",
   },
   "trade-modified": {
@@ -195,7 +195,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-sky-600 dark:text-sky-400",
     bg: "bg-sky-50 dark:bg-sky-900/20",
     label: "Trade",
-    defaultPath: "/dashboard/user/orders",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Order",
   },
   "trade-cancelled": {
@@ -203,7 +203,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-slate-600 dark:text-slate-400",
     bg: "bg-slate-50 dark:bg-slate-800/40",
     label: "Trade",
-    defaultPath: "/dashboard/user/orders",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Order",
   },
   "broker-disconnected": {
@@ -211,7 +211,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-orange-600 dark:text-orange-400",
     bg: "bg-orange-50 dark:bg-orange-900/20",
     label: "Broker",
-    defaultPath: "/dashboard/user/broker",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "Reconnect Broker",
   },
 
@@ -221,7 +221,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-900/20",
     label: "Renewal",
-    defaultPath: "/dashboard/user/subscribedservices",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View Subscription",
   },
   "renewal-failed": {
@@ -229,7 +229,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-red-600 dark:text-red-400",
     bg: "bg-red-50 dark:bg-red-900/20",
     label: "Renewal",
-    defaultPath: "/dashboard/user/subscribedservices",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "Retry Renewal",
   },
   "kyc-approved": {
@@ -237,7 +237,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-green-600 dark:text-green-400",
     bg: "bg-green-50 dark:bg-green-900/20",
     label: "KYC",
-    defaultPath: "/dashboard/user/kyc",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "View KYC",
   },
   "kyc-rejected": {
@@ -245,7 +245,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-red-600 dark:text-red-400",
     bg: "bg-red-50 dark:bg-red-900/20",
     label: "KYC",
-    defaultPath: "/dashboard/user/kyc",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "Resubmit",
   },
   "profile-incomplete": {
@@ -253,7 +253,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-amber-600 dark:text-amber-400",
     bg: "bg-amber-50 dark:bg-amber-900/20",
     label: "Profile",
-    defaultPath: "/dashboard/user/myprofile",
+    defaultPath: "/dashboard/serviceprovider/myprofile",
     ctaLabel: "Complete Profile",
   },
   "bank-missing": {
@@ -261,7 +261,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-amber-600 dark:text-amber-400",
     bg: "bg-amber-50 dark:bg-amber-900/20",
     label: "Bank",
-    defaultPath: "/dashboard/user/myprofile",
+    defaultPath: "/dashboard/serviceprovider/myprofile",
     ctaLabel: "Add Bank",
   },
   "plan-expiring": {
@@ -269,7 +269,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-amber-600 dark:text-amber-400",
     bg: "bg-amber-50 dark:bg-amber-900/20",
     label: "Expiring",
-    defaultPath: "/dashboard/user/subscribedservices",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "Renew Now",
   },
   "plan-expired": {
@@ -277,7 +277,7 @@ export const TYPE_CONFIG: Record<string, TypeConfig> = {
     color: "text-red-600 dark:text-red-400",
     bg: "bg-red-50 dark:bg-red-900/20",
     label: "Expired",
-    defaultPath: "/dashboard/user/subscribedservices",
+    defaultPath: "/dashboard/serviceprovider/recommendations",
     ctaLabel: "Renew Now",
   },
   announcement: {
@@ -320,17 +320,7 @@ export function resolveLink(notification: Notification, config: TypeConfig): str
   if (config.defaultPath) {
     return config.defaultPath;
   }
-  const senderId = notification.sentBy?.id;
-  if (
-    senderId &&
-    senderId !== "admin" &&
-    senderId !== "system" &&
-    senderId !== "bigul" &&
-    senderId !== "aliceblue"
-  ) {
-    return `/dashboard/user/experts/${senderId}`;
-  }
-  return "/dashboard/notifications";
+  return "/dashboard/serviceprovider/recommendations";
 }
 
 export function resolveCtaLabel(notification: Notification, config: TypeConfig): string {

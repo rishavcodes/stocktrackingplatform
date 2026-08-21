@@ -353,7 +353,7 @@ export default function ProviderSigninContainer() {
                 const category = data.category;
 
                 if (category === "Broker") {
-                    router.push("/dashboard/broker");
+                    router.push("/dashboard/serviceprovider/recommendations");
                     return;
                 }
 
@@ -377,7 +377,7 @@ export default function ProviderSigninContainer() {
                     return;
                 }
 
-                router.push("/dashboard/serviceprovider/overview");
+                router.push("/dashboard/serviceprovider/recommendations");
                 return;
             }
 

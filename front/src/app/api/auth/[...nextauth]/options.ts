@@ -1,7 +1,5 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/store/slices/authSlice";
 
 /**
  * Absolute backend origin for the SERVER-SIDE fetches in this file.
@@ -42,6 +40,10 @@ const SESSION_COOKIE_DOMAIN = (() => {
   }
 })();
 
+/**
+ * Provider-only auth. There is no customer, admin or broker login any more —
+ * the single credentials flow is phone number + OTP, always as `provider`.
+ */
 export const options: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -49,112 +51,23 @@ export const options: NextAuthOptions = {
       credentials: {
         number: { label: "Phone Number", type: "text" },
         loginAs: { label: "Login As", type: "text" },
-        brokerType: { label: "Broker Type", type: "text" },
-        clientCode: { label: "Client Code", type: "text" },
-        accessToken: { label: "Access Token", type: "text" },
-        expiresAt: { label: "Expires At", type: "text" },
-        // Set by the admin's "View as SP" flow. When present we skip the
-        // OTP / phone-number flow and trust the pre-signed backend JWT —
-        // it was issued by /api/admin/impersonate which verifies the
-        // caller is an admin before signing.
-        impersonateToken: { label: "Impersonate Token", type: "text" },
       },
-      async authorize(credentials, req) {
-        // Impersonation branch — admin already proved themselves to the
-        // backend; we just fetch the target user's data and establish a
-        // session backed by the pre-signed token.
-        if (credentials?.impersonateToken) {
-          try {
-            // The token's `id` claim is the SP/user we're impersonating, and
-            // `role` is "provider" | "user". `impersonatedBy` (set by
-            // /api/admin/impersonate) is the admin's id; we propagate it
-            // into the session so the UI can show an "Exit Impersonation"
-            // banner. Decoding without verification is fine here: the
-            // backend re-verifies on every subsequent request.
-            const payload = JSON.parse(
-              Buffer.from(
-                credentials.impersonateToken.split(".")[1],
-                "base64",
-              ).toString("utf8"),
-            ) as { id?: string; role?: string; impersonatedBy?: string };
-            if (!payload?.id) return null;
+      async authorize(credentials) {
+        if (!credentials?.number) return null;
 
-            // getuserdata defaults to ServiceProviderRegModel; pass type=user
-            // so customer impersonation looks up UserModel instead.
-            const typeParam = payload.role === "user" ? "&type=user" : "";
-            const res = await fetch(
-              `${BACKEND_URL}/api/auth/getuserdata?id=${payload.id}${typeParam}`,
-              { headers: { Authorization: `Bearer ${credentials.impersonateToken}` } },
-            );
-            if (!res.ok) return null;
-            const json = await res.json();
-            if (!json?.user) return null;
-            return {
-              ...json.user,
-              // The user document doesn't carry a `role` field, so force it
-              // from the JWT claim. Without this, the session.user.role would
-              // be undefined and the middleware would block /dashboard/user.
-              role: payload.role,
-              backendToken: credentials.impersonateToken,
-              isImpersonation: true,
-              impersonatedBy: payload.impersonatedBy,
-            };
-          } catch {
-            return null;
-          }
-        }
-
-        const hasBrokerCreds =
-          credentials?.brokerType &&
-          credentials?.clientCode &&
-          credentials?.loginAs === "user";
-
-        if (hasBrokerCreds) {
-          const body: Record<string, unknown> = {
-            brokerType: credentials.brokerType,
-            clientCode: credentials.clientCode,
-            loginAs: "user",
-          };
-          if (credentials.accessToken != null && credentials.expiresAt != null) {
-            body.accessToken = credentials.accessToken;
-            body.expiresAt = Number(credentials.expiresAt);
-          }
-          const response = await fetch(
-            `${BACKEND_URL}/api/auth/signin`,
-            {
-              method: "POST",
-              body: JSON.stringify(body),
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-          if (!response.ok) return null;
-          const data = await response.json();
-          const { user, token, userExists } = data;
-          if (!userExists || !user) return null;
-          return { ...user, backendToken: token, brokerSession: data.brokerSession ?? null };
-        }
-
-        if (!credentials?.number || !credentials?.loginAs) {
-          return null;
-        }
-
-        const response = await fetch(
-          `${BACKEND_URL}/api/auth/signin`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              number: credentials.number,
-              loginAs: credentials.loginAs,
-            }),
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetch(`${BACKEND_URL}/api/auth/signin`, {
+          method: "POST",
+          body: JSON.stringify({
+            number: credentials.number,
+            loginAs: "provider",
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
 
         if (!response.ok) return null;
 
         const { user, token, userExists } = await response.json();
         if (!userExists || !user) return null;
-        // console.log(user);
         return { ...user, backendToken: token };
       },
     }),
@@ -164,8 +77,8 @@ export const options: NextAuthOptions = {
     maxAge: 60 * 60 * 24, // 1 day
   },
   // Scope the session cookie to `.tradeboxlive.com` ONLY when we are actually
-  // deployed there, so a user signed in on the apex stays signed in on broker
-  // subdomains like `bigul.tradeboxlive.com`.
+  // deployed there, so a user signed in on the apex stays signed in on branded
+  // subdomains.
   //
   // Anywhere else (localhost, *.vercel.app, any other host) the domain must be
   // left undefined so the cookie is host-scoped. A browser silently DROPS a
@@ -192,7 +105,6 @@ export const options: NextAuthOptions = {
       if (user) {
         const u = user as any;
         token.backendToken = u.backendToken;
-        token.brokerSession = u.brokerSession ?? null;
         token.id = u._id;
         token.role = u.role;
         token.type = u.type;
@@ -207,20 +119,13 @@ export const options: NextAuthOptions = {
         // Pulled out so sidebar/middleware can read them without traversing addedby.
         token.subProfileRole = u.addedby?.subProfileRole;
         token.subPermissions = u.addedby?.permissions;
-        token.permissions = u.permissions || [];
         token.customSubdomain = u.customSubdomain ?? null;
         token.customSubdomainStatus = u.customSubdomainStatus ?? null;
-        token.isImpersonation = u.isImpersonation === true;
-        token.impersonatedBy = u.impersonatedBy;
-		token.exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
+        token.exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
       }
-      
 
-      // Handle session updates from client (e.g. after KYC/details modal, profile pic update)
+      // Handle session updates from client (e.g. after details modal, profile pic update)
       if (trigger === "update" && updateData) {
-        // Merge a broker session when a user links a broker while already signed in
-        // (e.g. connecting Bigul from the dashboard via updateSession({ brokerSession })).
-        if (updateData.brokerSession !== undefined) token.brokerSession = updateData.brokerSession;
         if (updateData.RegName !== undefined) token.RegName = updateData.RegName;
         if (updateData.email !== undefined) token.email = updateData.email;
         if (updateData.pannumber !== undefined) token.pannumber = updateData.pannumber;
@@ -293,16 +198,8 @@ export const options: NextAuthOptions = {
       return baseUrl;
     },
     async session({ session, token }) {
-      // Pass backend token + user info to client
-      // console.log("session token: ", token);
       session.backendToken = token.backendToken;
-      session.brokerSession = token.brokerSession ?? null;
-      session.isImpersonation = token.isImpersonation === true;
-      session.impersonatedBy = token.impersonatedBy;
-      if (
-        token.role === "provider" ||
-        token.role === "user"
-      ) {
+      if (token.role === "provider") {
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.type = token.type;
@@ -317,26 +214,16 @@ export const options: NextAuthOptions = {
         // Sub-profile gates — sidebar / middleware / can() read these.
         (session.user as any).subProfileRole = (token as any).subProfileRole;
         (session.user as any).subPermissions = (token as any).subPermissions;
-        if (token.role === "provider") {
-          session.user.customSubdomain = token.customSubdomain ?? null;
-          session.user.customSubdomainStatus = token.customSubdomainStatus ?? null;
-        }
-      } else if (
-        token.role === "admin" ||
-        token.role === "sub_admin" ||
-        token.role === "super_admin"
-      ) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.permissions = token.permissions;
-        session.user.backendToken = token.backendToken;
+        session.user.customSubdomain = token.customSubdomain ?? null;
+        session.user.customSubdomainStatus = token.customSubdomainStatus ?? null;
       }
-      // console.log("session",session)
       return session;
     },
   },
+  // Both must be real routes — these previously pointed at "/auth/signin",
+  // which does not exist, so every NextAuth error redirect 404'd.
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/signin",
+    signIn: "/auth/provider/signin",
+    error: "/auth/provider/signin",
   },
 };

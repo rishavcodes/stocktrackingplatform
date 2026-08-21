@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ImpersonationBanner from "@/components/Impersonation/ImpersonationBanner";
 import SessionExpiryWatcher from "@/components/Auth/SessionExpiryWatcher";
 import NavMenuDropDown from "@/components/Navbar/NavMenuDropDown";
 import NotificationDrowdown from "@/components/Notifications/NotificationDrowDown";
@@ -19,29 +18,10 @@ import {
 	isReadOnlySubProfile,
 	type PermissionKey,
 } from "@/lib/subProfilePermissions";
-import {
-	Briefcase,
-	Calendar,
-	GraduationCap,
-	LayoutDashboard,
-	Menu,
-	Newspaper,
-	Package,
-	PieChart,
-	Store,
-	Ticket,
-	TrendingUp,
-	User as UserIcon,
-	UserCog,
-	UserPlus,
-	Users,
-	Wallet,
-	X,
-} from "lucide-react";
+import { Menu, TrendingUp, User as UserIcon, X } from "lucide-react";
 
 // permKey tags each sidebar item with the permission module it depends on.
-// Items without a permKey are always shown (Overview, Coupons, Courses — none
-// are gated by sub-profile permissions in MVP).
+// Items without a permKey are always shown.
 type ProviderNavItem = {
 	title: string;
 	href: string;
@@ -52,68 +32,6 @@ type ProviderNavItem = {
 
 const ProviderSideBar: ProviderNavItem[] = [
 	{
-		title: "Overview",
-		base: "/dashboard/serviceprovider/overview",
-		href: "/dashboard/serviceprovider/overview",
-		Icon: LayoutDashboard,
-	},
-	{
-		title: "Profile",
-		href: "/dashboard/serviceprovider/myprofile",
-		base: "/dashboard/serviceprovider/myprofile",
-		permKey: "profile",
-		Icon: UserIcon,
-	},
-	{
-		title: "Wallet",
-		base: "/dashboard/serviceprovider/wallet",
-		href: "/dashboard/serviceprovider/wallet",
-		permKey: "wallet",
-		Icon: Wallet,
-	},
-	{
-		title: "Research Reports",
-		base: "/dashboard/serviceprovider/content/researchreports/",
-		href: "/dashboard/serviceprovider/content/researchreports/postresearchreport",
-		permKey: "articles",
-		Icon: Newspaper,
-	},
-	{
-		title: "Events",
-		base: "/dashboard/serviceprovider/content/events/",
-		href: "/dashboard/serviceprovider/content/events/postevent",
-		permKey: "events",
-		Icon: Calendar,
-	},
-	{
-		title: "My Plans",
-		base: "/dashboard/serviceprovider/services/",
-		href: "/dashboard/serviceprovider/services/createplan",
-		permKey: "services",
-		Icon: Briefcase,
-	},
-	{
-		title: "Subscribers",
-		href: "/dashboard/serviceprovider/subscribers",
-		base: "/dashboard/serviceprovider/subscribers",
-		permKey: "services",
-		Icon: Users,
-	},
-	{
-		title: "Leads",
-		href: "/dashboard/serviceprovider/leads",
-		base: "/dashboard/serviceprovider/leads",
-		permKey: "leads",
-		Icon: UserPlus,
-	},
-	{
-		title: "Coupon Codes",
-		href: "/dashboard/serviceprovider/content/createcoupon",
-		base: "/dashboard/serviceprovider/content/createcoupon/addcoupon",
-		permKey: "services",
-		Icon: Ticket,
-	},
-	{
 		title: "Recommendations",
 		href: "/dashboard/serviceprovider/recommendations/create",
 		base: "/dashboard/serviceprovider/recommendations",
@@ -121,31 +39,11 @@ const ProviderSideBar: ProviderNavItem[] = [
 		Icon: TrendingUp,
 	},
 	{
-		title: "Portfolios",
-		href: "/dashboard/serviceprovider/portfolio/create",
-		base: "/dashboard/serviceprovider/portfolio",
-		permKey: "portfolios",
-		Icon: PieChart,
-	},
-	{
-		title: "Marketplace",
-		href: "/dashboard/serviceprovider/marketplace/my-marketplaces",
-		base: "/dashboard/serviceprovider/marketplace",
-		permKey: "marketplace",
-		Icon: Store,
-	},
-	{
-		title: "Courses",
-		href: "/dashboard/serviceprovider/lms/createcourse",
-		base: "/dashboard/serviceprovider/lsm",
-		Icon: GraduationCap,
-	},
-	{
-		title: "Packages",
-		href: "/dashboard/serviceprovider/packages/create",
-		base: "/dashboard/serviceprovider/packages",
-		permKey: "services",
-		Icon: Package,
+		title: "Profile",
+		href: "/dashboard/serviceprovider/myprofile",
+		base: "/dashboard/serviceprovider/myprofile",
+		permKey: "profile",
+		Icon: UserIcon,
 	},
 ];
 
@@ -161,7 +59,6 @@ export default function Providerlayout({
 	const [isNotificationBarOpen, setIsNotificationBarOpen] =
 		useState<boolean>(false);
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [unreadSupport, setUnreadSupport] = useState<number>(0);
 
 	const profileMenuRef = useRef<HTMLDivElement | null>(null);
 	const notifMenuRef = useRef<HTMLDivElement | null>(null);
@@ -204,42 +101,9 @@ export default function Providerlayout({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pathname, session.status]);
 
-	const isImpersonating = session?.data?.isImpersonation === true;
-	// Banner is ~40px tall; shift the fixed sidebar + topbar down by that height
-	// when present so nothing is occluded.
-	const bannerOffset = isImpersonating ? 40 : 0;
-
-	// Poll the support-ticket unread count for this SP. Drives the red dot on
-	// the avatar and inside the dropdown — also updates when the user
-	// navigates back to this layout (the route-change effect already fires).
-	const fetchUnreadSupport = useCallback(async () => {
-		if (!spId) return;
-		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/support/tickets/stats?submittedById=${spId}&_=${Date.now()}`,
-				{ cache: "no-store" },
-			);
-			const json = await res.json();
-			if (res.ok && json?.success) {
-				setUnreadSupport(Number(json?.data?.unreadForSP) || 0);
-			}
-		} catch (e) {
-			console.error("unread support fetch failed", e);
-		}
-	}, [spId]);
-
-	useEffect(() => {
-		if (!spId) return;
-		fetchUnreadSupport();
-		const id = setInterval(fetchUnreadSupport, 30_000);
-		return () => clearInterval(id);
-	}, [spId, fetchUnreadSupport]);
-
-	// Refresh the count when the user navigates (e.g. they just left the
-	// support page after reading messages — clear the dot fast).
-	useEffect(() => {
-		fetchUnreadSupport();
-	}, [pathname, fetchUnreadSupport]);
+	// Impersonation was removed with the admin console; nothing offsets the
+	// fixed sidebar + topbar any more.
+	const bannerOffset = 0;
 
 	useEffect(() => {
 		// Start progress bar whenever route starts changing
@@ -304,25 +168,13 @@ export default function Providerlayout({
 	const handleNotificationIconClick = () =>
 		setIsNotificationBarOpen((prev) => !prev);
 
-	// 1) Master Non Individual sees the new Team page; everyone else doesn't.
-	// 2) Sub profiles (user role) get their sidebar filtered down to only the
-	//    modules the master ticked. Admin role + master + Individual SPs see
-	//    everything (can() returns true for them).
-	const isMasterNonIndividual =
-		session.data?.user.type === "Non Individual" &&
-		!(session.data?.user as any)?.addedby?.isSubProfile;
-
+	// Sub profiles (user role) get their sidebar filtered down to only the
+	// modules the master ticked. Admin role + master + Individual SPs see
+	// everything (can() returns true for them).
 	const providerButtons: ProviderNavItem[] = useMemo(() => {
 		const readOnly = isReadOnlySubProfile(session.data);
-		const base = ProviderSideBar.filter(
-			(b) =>
-				(!b.permKey || can(session.data, b.permKey)) &&
-				// Coupon Codes has no permKey (shown to everyone by default), but
-				// view-only admin sub profiles must not see the coupon section.
-				!(
-					readOnly &&
-					b.href === "/dashboard/serviceprovider/content/createcoupon"
-				),
+		return ProviderSideBar.filter(
+			(b) => !b.permKey || can(session.data, b.permKey),
 		).map((b) => {
 			// The Recommendations tab links to the create form by default. A
 			// view-only admin sub can't post, so point their tab at the read-only
@@ -338,17 +190,8 @@ export default function Providerlayout({
 			}
 			return b;
 		});
-		if (isMasterNonIndividual) {
-			base.push({
-				title: "Team",
-				href: "/dashboard/serviceprovider/team",
-				base: "/dashboard/serviceprovider/team",
-				Icon: UserCog,
-			});
-		}
-		return base;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [session.data, isMasterNonIndividual]);
+	}, [session.data]);
 
 	// Trailing slashes in some `base` values would break a naive startsWith,
 	// so normalise before comparing.
@@ -400,7 +243,6 @@ export default function Providerlayout({
 			{/* Logs out immediately when the session lapses, on any page — without
 			    this, expiry is only caught on a server request (see middleware). */}
 			<SessionExpiryWatcher callbackUrl="/" />
-			<ImpersonationBanner />
 
 			{/* ===================== DESKTOP SIDEBAR (lg+) ===================== */}
 			<aside
@@ -492,17 +334,9 @@ export default function Providerlayout({
 									/>
 								</AvatarFallback>
 							</Avatar>
-							{unreadSupport > 0 && (
-								<span
-									className="absolute top-0 right-0 w-3 h-3 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-900"
-									title={`${unreadSupport} support update${
-										unreadSupport === 1 ? "" : "s"
-									}`}
-								/>
-							)}
 						</div>
 						<AnimatePresence>
-							{isMenuOpen && <NavMenuDropDown unreadSupport={unreadSupport} />}
+							{isMenuOpen && <NavMenuDropDown />}
 						</AnimatePresence>
 					</div>
 				</div>

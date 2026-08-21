@@ -172,7 +172,7 @@ export default function NotificationDropdown() {
   const [bulkBusy, setBulkBusy] = useState(false);
 
   // Lightbox state — opens when the user taps the thumbnail on an image
-  // notification. Same UX as /dashboard/notifications.
+  // notification.
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   const markAllRead = async () => {
@@ -207,7 +207,7 @@ export default function NotificationDropdown() {
 
   // "Clear all" on the bell is a LOCAL clear — empties the dropdown's
   // in-memory list so the popup looks fresh, but the notifications stay on
-  // the server and still show up on /dashboard/notifications.
+  // the server.
   const clearAll = () => {
     if (bulkBusy || notifications.length === 0) return;
     setNotifications([]);
@@ -565,17 +565,6 @@ export default function NotificationDropdown() {
           }
           return rows;
         })()}
-      </div>
-
-      {/* Footer — full-width link to the full notifications page */}
-      <div className="border-t border-gray-100 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-800/40">
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard/notifications")}
-          className="w-full py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-800/70 transition"
-        >
-          View all notifications
-        </button>
       </div>
 
       {/* Lightbox is rendered through a portal to document.body so its

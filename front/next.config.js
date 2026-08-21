@@ -51,7 +51,7 @@ const nextConfig = {
   // Mixed Content error.
   //
   // IMPORTANT — the proxy must NOT swallow Next.js's own API routes.
-  // `[...nextauth]` and `admin/impersonate/*` are *dynamic* routes, and
+  // `[...nextauth]` is a *dynamic* route, and
   // dynamic routes are matched AFTER rewrites, so a bare `/api/:path*`
   // catch-all wins over them and proxies NextAuth to Express — which
   // answers `Cannot GET /api/auth/session` and breaks every login.
@@ -72,7 +72,7 @@ const nextConfig = {
 
     return [
       {
-        source: `/api/:path((?!auth/(?:${NEXTAUTH_RESERVED})|admin/impersonate).*)`,
+        source: `/api/:path((?!auth/(?:${NEXTAUTH_RESERVED})).*)`,
         destination: 'http://13.204.148.45:8080/api/:path',
       },
     ]

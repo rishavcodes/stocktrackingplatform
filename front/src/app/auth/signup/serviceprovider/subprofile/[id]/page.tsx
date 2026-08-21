@@ -32,14 +32,14 @@ export default function SPSubProfilePage() {
         );
 
         if (!res.ok) {
-          router.push("/auth/signup/serviceprovider/suberror");
+          router.push("/auth/provider/signin");
           return;
         }
 
         const response = await res.json();
         setData(response);
       } catch (error) {
-        router.push("/auth/signup/serviceprovider/suberror");
+        router.push("/auth/provider/signin");
       } finally {
         setLoading(false);
       }

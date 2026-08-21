@@ -8,26 +8,8 @@ import SignOutIcon from "@/icons/SignOutIcon";
 import { HelpCircle, LogOut, MessageCircle, Settings, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type NavMenuDropDownProps = {
-	/** When > 0, shows a red dot on the SP "Help & Support" entry. */
-	unreadSupport?: number;
-};
-
-export default function NavMenuDropDown({
-	unreadSupport = 0,
-}: NavMenuDropDownProps = {}) {
+export default function NavMenuDropDown() {
 	const { data: session } = useSession();
-	const role = session?.user?.role;
-
-	// Decide which surface this dropdown is on. Anything that isn't an admin /
-	// provider / broker is treated as a customer (covers user, undefined, and
-	// any unexpected value during a loading state).
-	const isAdmin =
-		role === "admin" || role === "sub_admin" || role === "super_admin";
-	const isProvider = role === "provider";
-	const isBroker = role === "broker";
-	const isCustomer = !isAdmin && !isProvider && !isBroker;
-
 	type MenuItem = {
 		title: string;
 		href: string;
@@ -35,65 +17,14 @@ export default function NavMenuDropDown({
 		hasUnread?: boolean;
 	};
 
-	let menuItems: MenuItem[] = [];
-
-	if (isCustomer) {
-		// "My Profile" lives in the sidebar — don't duplicate it here.
-		menuItems = [
-			{
-				title: "Profile",
-				href: "/dashboard/user/myprofile",
-				icon: <User />,
-			},
-			{
-				title: "Settings",
-				href: "/dashboard/user/settings",
-				icon: <Settings />,
-			},
-			{
-				title: "Help & Support",
-				href: "/dashboard/user/support",
-				icon: <HelpCircle />,
-			},
-			{
-				title: "Chat with Experts",
-				href: "/dashboard/user/chats",
-				icon: <MessageCircle />,
-			},
-		];
-	} else if (isProvider) {
-		menuItems = [
-			{
-				title: "My Dashboard",
-				href: "/dashboard/serviceprovider/overview",
-				icon: <DashboardIcon />,
-			},
-			{
-				title: "Help & Support",
-				href: "/dashboard/serviceprovider/support",
-				icon: <HelpCircle />,
-				
-			},
-			
-			
-		];
-	} else if (isBroker) {
-		menuItems = [
-			{
-				title: "My Dashboard",
-				href: "/dashboard/broker/overview",
-				icon: <DashboardIcon />,
-			},
-		];
-	} else if (isAdmin) {
-		menuItems = [
-			{
-				title: "My Dashboard",
-				href: "/dashboard/admin/serviceprovider",
-				icon: <DashboardIcon />,
-			},
-		];
-	}
+	// Provider is the only account type in this app.
+	const menuItems: MenuItem[] = [
+		{
+			title: "My Dashboard",
+			href: "/dashboard/serviceprovider/recommendations",
+			icon: <DashboardIcon />,
+		},
+	];
 
 	const handleLogout = async () => {
 		try {
@@ -101,9 +32,7 @@ export default function NavMenuDropDown({
 
 			if (token) {
 				try {
-					const logoutEndpoint = isAdmin
-						? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/logout`
-						: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`;
+					const logoutEndpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`;
 
 					await fetch(logoutEndpoint, {
 						method: "POST",

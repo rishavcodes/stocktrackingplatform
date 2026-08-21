@@ -104,7 +104,7 @@ export default function SubProfileSignupContainer({
           redirect: false,
         });
 
-        router.push("/dashboard/serviceprovider/overview");
+        router.push("/dashboard/serviceprovider/recommendations");
         return;
       }
 
