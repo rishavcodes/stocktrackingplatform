@@ -1,5 +1,4 @@
 import { ScoreCardModel } from "../models/ScoreCardModel";
-import { Portfolio } from "../lib/schema";
 import { fetchCMPInGroup } from "../helpers/ScoreCardData";
 import {
   setCachedPriceBulk,
@@ -39,7 +38,6 @@ let fallbackInterval: NodeJS.Timeout | null = null;
 /**
  * Collect all tokens that need price tracking:
  * - Open trades (from Redis registry — no DB hit)
- * - Portfolio scripts
  * - Pending GetCmp requests
  */
 async function collectAllTokens(): Promise<TokenSubscription[]> {
@@ -57,25 +55,7 @@ async function collectAllTokens(): Promise<TokenSubscription[]> {
     }
   });
 
-  // 2. Portfolio scripts
-  const portfolios = await Portfolio.find()
-    .select("scripts.scriptName")
-    .lean();
-
-  portfolios.forEach((portfolio: any) => {
-    portfolio.scripts?.forEach((script: any) => {
-      const exchange = script.scriptName?.exchange;
-      const token = script.scriptName?.token;
-      if (!exchange || !token) return;
-      const key = `${exchange}:${token}`;
-      if (!tokenSet.has(key)) {
-        tokens.push({ exchange, token });
-        tokenSet.add(key);
-      }
-    });
-  });
-
-  // 3. Pending GetCmp requests
+  // 2. Pending GetCmp requests
   const pendingTokens = getPendingTokens();
   for (const [token, exchange] of pendingTokens) {
     const key = `${exchange}:${token}`;

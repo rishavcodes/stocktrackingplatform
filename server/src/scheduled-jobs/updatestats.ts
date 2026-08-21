@@ -9,7 +9,6 @@ import {
 } from "../models/PostModels";
 
 import { CourseModel } from "../models/CourseModel";
-import { Portfolio } from "../lib/schema";
 import { ScoreCardModel } from "../models/ScoreCardModel";
 import { ServiceProviderRegModel } from "../models/AuthModels";
 
@@ -136,34 +135,16 @@ export const startServiceProviderStatsCron = () => {
 
         console.log("[CRON] recommendationStats:", recommendationStats);
 
-        /* ================= MODEL PORTFOLIO STATS ================= */
-        const portfolios = await Portfolio.find({
-          "authorData.id": providerId,
-        });
-
+        // Model portfolios were removed — report zeroes so the stored
+        // stats block keeps its shape for any existing consumer.
         const modelPortfolioStates = {
-          totalPortfolios: portfolios.length,
-          activePortfolios: portfolios.filter(
-            (p) => !p.closedPositions?.length
-          ).length,
-          closedPortfolios: portfolios.filter(
-            (p) => p.closedPositions?.length
-          ).length,
-          totalSubscribers: portfolios.reduce(
-            (sum, p) => sum + (p.subscribedBy?.length || 0),
-            0
-          ),
+          totalPortfolios: 0,
+          activePortfolios: 0,
+          closedPortfolios: 0,
+          totalSubscribers: 0,
           avgReturnPercentage: 0,
-          avgRiskLevel:
-            portfolios.length > 0
-              ? portfolios.reduce(
-                  (s, p) => s + (p.riskLevel || 0),
-                  0
-                ) / portfolios.length
-              : 0,
+          avgRiskLevel: 0,
         };
-
-        console.log("[CRON] modelPortfolioStates:", modelPortfolioStates);
 
         /* ================= COURSE STATS ================= */
         const courses = await CourseModel.find({

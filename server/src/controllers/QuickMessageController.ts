@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { ServiceModel } from "../models/PostModels";
-import { sendTelegramMessage, sendTelegramPhoto } from "../config/telegram";
 import { sendNotification } from "../helpers/sendNotification";
 import { getProfileFamilyIds } from "../utils/profileHelpers";
 
@@ -156,53 +155,16 @@ export const broadcastQuickMessage = async (
       }
     }
 
-    // Fan out the sends in parallel — Telegram bot API handles concurrent
-    // requests fine and the SP just wants this to feel snappy.
-    await Promise.all(
-      plans.map(async (plan: any) => {
-        const planIdStr = String(plan._id);
-        if (plan.activated === false) {
-          skipped.push({
-            planId: planIdStr,
-            reason: "Plan is deactivated",
-          });
-          return;
-        }
-        // No Telegram channel → deliver to this plan's subscribers via the
-        // in-app + push notification fan-out only. Don't skip it.
-        if (!plan.telegramChannelId) {
-          notified.push({ planId: planIdStr, title: plan.title });
-          return;
-        }
-        try {
-          // Photo path when an image is attached — caption carries the
-          // RA's text. Photo-only (no caption) is supported too.
-          if (imageUrl) {
-            await sendTelegramPhoto(
-              plan.telegramChannelId,
-              imageUrl,
-              trimmed,
-            );
-          } else {
-            await sendTelegramMessage(plan.telegramChannelId, trimmed);
-          }
-          sent.push({
-            planId: planIdStr,
-            title: plan.title,
-            channelId: plan.telegramChannelId,
-          });
-        } catch (err: any) {
-          console.error(
-            `[quickmessage] send failed for plan ${planIdStr}:`,
-            err?.message || err,
-          );
-          skipped.push({
-            planId: planIdStr,
-            reason: "Telegram delivery failed",
-          });
-        }
-      }),
-    );
+    // Telegram delivery was removed — every owned, active plan is delivered
+    // through the in-app notification fan-out below.
+    for (const plan of plans as any[]) {
+      const planIdStr = String(plan._id);
+      if (plan.activated === false) {
+        skipped.push({ planId: planIdStr, reason: "Plan is deactivated" });
+        continue;
+      }
+      notified.push({ planId: planIdStr, title: plan.title });
+    }
 
     // In-app bell + PWA push fan-out to subscribers of the plans we actually
     // delivered to via Telegram. sendNotification() already auto-fires push

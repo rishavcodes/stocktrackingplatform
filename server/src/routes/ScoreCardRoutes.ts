@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
   FetchMyRecommendations,
   GetCmp,
-  createRationalPDF,
   createScoreCard,
   deleteTrade,
   downloadRationalPDF,
@@ -48,10 +47,6 @@ router.post("/deletetrade", deleteTrade);
 
 
 
-router.post(
-  "/create-rational-pdf",
-  createRationalPDF
-);
 
 // Download rational PDF route
 router.get("/download-rational-pdf/:tradeId", downloadRationalPDF);

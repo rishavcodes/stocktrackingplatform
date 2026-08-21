@@ -7,9 +7,7 @@ import {
 } from "../../models/AuthModels";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { mailQueue } from "../../queues/MailQueues";
 import { notificationModel } from "../../models/NotificationModel";
-import { adminNotify } from "../../helpers/Notify";
 import { SessionModel } from "../../models/Session";
 import { LoginActivityModel } from "../../models/LoginActivity";
 import getDeviceInfo from "../../helpers/getDeviceInfo";
@@ -124,34 +122,10 @@ export const ProviderSignUp = async (req: Request, res: Response) => {
 
     /* ---------------- EMAIL ---------------- */
 
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: email,
-      subject: `Welcome aboard, ${RegName}!`,
-      html: `
-        <p>
-          Congratulations on successfully registering with us.
-          Step into your dashboard and unlock opportunities.
-        </p>
-        <br/>
-        Best wishes,<br/><br/>
-        Trade Box Fintech Solutions
-      `,
-    };
 
     /* ---------------- ADMIN NOTIFY ---------------- */
 
-    await adminNotify(
-      `New ${newProvider.RegName} registered as ${
-        newProvider?.addedby?.isSubProfile ? "sub profile" : "provider"
-      }`
-    );
 
-    await mailQueue.add(
-      email,
-      { mailOptions },
-      { removeOnComplete: true, removeOnFail: true }
-    );
 
     return res.status(200).json({
       success: true,

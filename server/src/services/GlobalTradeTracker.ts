@@ -7,8 +7,6 @@ import {
   updateCachedTrade,
 } from "./OpenTradeRegistry";
 import { ScoreCardTypes } from "../types";
-import { sendTelegramMessage } from "../config/telegram";
-import { getTelegramChannelIds } from "../helpers/getTelegramChannelId";
 import buildExitTelegramMessage from "../helpers/buildExitTelegramMessage";
 import { getMcxPnlMultiplier } from "../helpers/mcxLotMultipliers";
 import { publishScorecardChange } from "./ScorecardPubSub";
@@ -225,7 +223,7 @@ async function processSingleTrade(
     );
 
     if (closed) {
-      await sendToTelegram(
+      await notifyExit(
         item,
         buildExitTelegramMessage({
           scriptname: item.scriptname,
@@ -295,7 +293,7 @@ async function processSingleTrade(
       );
 
       if (closed) {
-        await sendToTelegram(
+        await notifyExit(
           item,
           buildExitTelegramMessage({
             scriptname: item.scriptname,
@@ -310,7 +308,7 @@ async function processSingleTrade(
       }
     } else {
       // Intermediate target hit -- notify subscribers that target N was reached
-      await sendToTelegram(
+      await notifyExit(
         item,
         buildExitTelegramMessage({
           scriptname: item.scriptname,
@@ -339,7 +337,7 @@ async function processSingleTrade(
     const closed = await closeTrade(item, "sl", sl, slPnl, slPct, lotSize, now);
 
     if (closed) {
-      await sendToTelegram(
+      await notifyExit(
         item,
         buildExitTelegramMessage({
           scriptname: item.scriptname,
@@ -440,21 +438,12 @@ async function closeTrade(
 /**
  * Send Telegram notification
  */
-async function sendToTelegram(
+async function notifyExit(
   item: ScoreCardTypes,
   message: string
 ): Promise<void> {
   try {
     if (!item.shareWithPlans?.length) return;
-
-    const channelIds = await getTelegramChannelIds(item.shareWithPlans);
-    if (channelIds.length) {
-      await Promise.all(
-        channelIds.map((id) =>
-          sendTelegramMessage(id, message).catch(() => null),
-        ),
-      );
-    }
 
     // Mirror the exact Telegram message to the in-app bell + PWA push so
     // subscribers see the same content no matter which channel reaches them
@@ -800,7 +789,7 @@ export async function sweepExpiredTriggeredTrades(opts: {
         );
 
         if (closed) {
-          await sendToTelegram(
+          await notifyExit(
             item,
             buildExitTelegramMessage({
               scriptname: item.scriptname,

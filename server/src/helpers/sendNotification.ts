@@ -1,7 +1,6 @@
 import { notificationModel } from "../models/NotificationModel";
 import { UserModel, ServiceProviderRegModel, AdminModel } from "../models/AuthModels";
 import { io } from "../index";
-import { sendPushToUsers } from "../lib/webPush";
 
 type RecipientRole = "user" | "provider" | "both" | "admin";
 
@@ -87,55 +86,6 @@ export async function sendNotification(args: SendNotificationArgs): Promise<void
       console.error("[sendNotification] socket emit failed:", err);
     }
 
-    // Browser push notification (PWA). Fires per-user across every device the
-    // recipient has registered. Independent of the socket emit above — the
-    // socket only reaches the currently-open browser tab, the push reaches
-    // closed browsers / phones on the home screen. Errors are swallowed so a
-    // bad VAPID config can't block the in-app notification path.
-    try {
-      // OS push title = sender name (e.g. "RA Nandini"). Falls back to the
-      // app name only when no sender is provided (system reminders, etc.).
-      const senderName = (args.sentBy?.name || "").trim();
-      const pushTitle = senderName || "Tradebox";
-
-      // If the in-app message starts with "{senderName}:" we strip that
-      // prefix off the OS-banner body — the title already carries the name,
-      // no need to repeat it. Bell dropdown still shows the full message.
-      let bodyText = args.message;
-      if (senderName) {
-        const prefix = `${senderName}:`;
-        if (bodyText.startsWith(prefix)) {
-          bodyText = bodyText.slice(prefix.length).trim();
-        }
-      }
-      const body = bodyText.length > 140 ? bodyText.slice(0, 137) + "…" : bodyText;
-
-      // Stable tag = doc id → identical re-fires (e.g. retry path) replace
-      // each other in the OS instead of stacking dupes.
-      sendPushToUsers(ids, {
-        title: pushTitle,
-        body,
-        url: args.postLink || "/dashboard",
-        tag: String((doc as any)._id || ""),
-        requireInteraction: false,
-        // `image` shows a hero image on Chrome's OS banner (Windows / Android)
-        // — Safari ignores it but doesn't error. Falls through cleanly when
-        // there's no attached image.
-        image: args.image,
-        data: {
-          notificationId: String((doc as any)._id || ""),
-          type: args.type,
-          category: args.category,
-          postLink: args.postLink,
-          ctaLabel: args.ctaLabel,
-          image: args.image,
-        },
-      }).catch((err) => {
-        console.error("[sendNotification] push fan-out failed:", err);
-      });
-    } catch (err) {
-      console.error("[sendNotification] push setup failed:", err);
-    }
   } catch (err) {
     console.error("[sendNotification] failed:", err);
   }

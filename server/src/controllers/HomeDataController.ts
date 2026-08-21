@@ -20,7 +20,6 @@ import { LeadModel, OrderModel } from "../models/TransactionModels";
 import { updateServiceProviderStats } from "../helpers/updateServiceProviderStats";
 import { ScoreCardModel } from "../models/ScoreCardModel";
 import { PackageModel } from "../models/PackageModel";
-import { Portfolio } from "../lib/schema";
 import {
   sanitizeArticleForResponse,
   sanitizeArticleListForResponse,
@@ -434,7 +433,7 @@ export const GetFullSpDetails = async (req: Request, res: Response) => {
   const { id } = req.query;
 
   try {
-    const [data, topExchange, portfolioCount, packageCount] = await Promise.all([
+    const [data, topExchange, packageCount] = await Promise.all([
       ServiceProviderRegModel.findById(id).select(
         "-password -wallet -subscriptionDetails -ServicesAndOrders -paymentDetails -WalletBalance"
       ).lean(),
@@ -443,7 +442,6 @@ export const GetFullSpDetails = async (req: Request, res: Response) => {
         { $group: { _id: { $toUpper: "$exchange" }, count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
-      Portfolio.countDocuments({ "authorData.id": id as string }),
       PackageModel.countDocuments({ "authorData.id": id as string }),
     ]);
 
@@ -467,7 +465,7 @@ export const GetFullSpDetails = async (req: Request, res: Response) => {
         avgRiskLevel: 0,
       };
     }
-    (data as any).stats.modelPortfolioStates.totalPortfolios = portfolioCount;
+    (data as any).stats.modelPortfolioStates.totalPortfolios = 0;
     (data as any).stats.packageStats = { totalPackages: packageCount };
 
     return res.status(200).json({

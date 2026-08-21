@@ -1,6 +1,5 @@
 import mongoose, { model, Schema } from "mongoose";
 import { RazorpayKeyModel } from "./IntegrationModels";
-import { Portfolio } from "../lib/schema";
 
 export const RESERVED_SUBDOMAINS = new Set([
   "www",

@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import { Types } from "mongoose";
 import shortid from "shortid";
 import { z } from "zod";
-import { Portfolio } from "../lib/schema";
 import { ServiceProviderRegModel, UserModel } from "../models/AuthModels";
 import { MarketplaceModel } from "../models/MarketplaceModel";
 import { deleteObject } from "../helpers/providerRegFileHelper";
@@ -791,15 +790,7 @@ export const getSingleMarketplaceController = async (
 						{ $group: { _id: "$authorData.id", count: { $sum: 1 } } },
 					]),
 
-					// Portfolios: ALL portfolios by this RA
-					Portfolio.aggregate([
-						{
-							$match: {
-								"authorData.id": { $in: expandedAuthorIds },
-							},
-						},
-						{ $group: { _id: "$authorData.id", count: { $sum: 1 } } },
-					]),
+					Promise.resolve([] as any[]), // portfolios removed
 
 					// Courses: ALL courses by this RA (no status filter, no marketplace filter)
 					// CourseModel uses `instructorId` (ObjectId), not `authorData.id`
@@ -1008,12 +999,8 @@ export const getSingleMarketplaceController = async (
 					shareWithMarketplaces: resolvedMarketplaceId,
 				};
 
-				const totalCount = await Portfolio.countDocuments(baseQuery);
-				const portfolios = await Portfolio.find(baseQuery)
-					.sort({ createdAt: -1 })
-					.skip(skip)
-					.limit(limit)
-					.lean();
+				const totalCount = 0; // portfolios removed
+				const portfolios: any[] = [];
 
 				const totalPages = Math.ceil(totalCount / limit);
             
@@ -1879,7 +1866,7 @@ export const getBrokerLeads = async (req: Request, res: Response) => {
 		const [usersArr, servicesArr, portfoliosArr, rasArr] = await Promise.all([
 			UserModel.find({ _id: { $in: userIds } }).select("name email number").lean(),
 			ServiceModel.find({ _id: { $in: serviceIds } }).select("title authorData").lean(),
-			Portfolio.find({ _id: { $in: serviceIds } }).select("portfolioName authorData").lean(),
+			Promise.resolve([] as any[]), // portfolios removed
 			ServiceProviderRegModel.find({ _id: { $in: expandedRaIds } }).select("name RegName companyName").lean(),
 		]);
 
@@ -1971,10 +1958,7 @@ export const getBrokerStats = async (req: Request, res: Response) => {
 					"authorData.id": { $in: expandedRaIds },
 					shareWithMarketplaces: { $in: marketplaceIds },
 				}),
-				Portfolio.countDocuments({
-					"authorData.id": { $in: expandedRaIds },
-					shareWithMarketplaces: { $in: marketplaceIds },
-				}),
+				Promise.resolve(0), // portfolios removed
 				ServiceModel.countDocuments({
 					"authorData.id": { $in: expandedRaIds },
 					shareWithMarketplaces: { $in: marketplaceIds },
@@ -2175,7 +2159,7 @@ export const getBrokerAnalytics = async (req: Request, res: Response) => {
 
 			// Content counts
 			ServiceModel.countDocuments({ "authorData.id": { $in: expandedRaIds }, shareWithMarketplaces: { $in: marketplaceIds }, approvalStatus: true }),
-			Portfolio.countDocuments({ "authorData.id": { $in: expandedRaIds }, shareWithMarketplaces: { $in: marketplaceIds } }),
+			Promise.resolve(0), // portfolios removed
 			CourseModel.countDocuments({ shareWithMarketplaces: { $in: marketplaceIds }, status: "published" }),
 			EventModel.countDocuments({ "authorData.id": { $in: expandedRaIds }, shareWithMarketplaces: { $in: marketplaceIds }, approvalStatus: true }),
 			ArticleModel.countDocuments({ "authorData.id": { $in: expandedRaIds }, shareWithMarketplaces: { $in: marketplaceIds } }),
@@ -2245,12 +2229,7 @@ export const getBrokerAnalytics = async (req: Request, res: Response) => {
 				{ $match: { shareWithMarketplaces: { $in: marketplaceIds } } },
 				{ $group: { _id: "$shareWithMarketplaces", count: { $sum: 1 } } },
 			]),
-			Portfolio.aggregate([
-				{ $match: { "authorData.id": { $in: expandedRaIds }, shareWithMarketplaces: { $in: marketplaceIds } } },
-				{ $unwind: "$shareWithMarketplaces" },
-				{ $match: { shareWithMarketplaces: { $in: marketplaceIds } } },
-				{ $group: { _id: "$shareWithMarketplaces", count: { $sum: 1 } } },
-			]),
+			Promise.resolve([] as any[]), // portfolios removed
 		]);
 
 		// ── Process results ──
@@ -2299,10 +2278,7 @@ export const getBrokerAnalytics = async (req: Request, res: Response) => {
 			{ $match: { instructorId: { $in: expandedRaIds }, shareWithMarketplaces: { $in: marketplaceIds }, status: "published" } },
 			{ $group: { _id: "$instructorId", count: { $sum: 1 } } },
 		]);
-		const portfoliosPerProvider = await Portfolio.aggregate([
-			{ $match: { "authorData.id": { $in: expandedRaIds }, shareWithMarketplaces: { $in: marketplaceIds } } },
-			{ $group: { _id: "$authorData.id", count: { $sum: 1 } } },
-		]);
+		const portfoliosPerProvider: any[] = []; // portfolios removed
 
 		const toMap = (arr: any[], valKey = "count") =>
 			Object.fromEntries(arr.map((a) => [a._id, a]));

@@ -183,7 +183,7 @@ export default function SubProfileSignupContainer({
       });
 
       toast({ title: "Sub profile created successfully" });
-      router.replace("/dashboard/serviceprovider/myprofile/details");
+      router.replace("/dashboard/serviceprovider/recommendations");
     } catch (err: any) {
       toast({
         title: "Signup failed",

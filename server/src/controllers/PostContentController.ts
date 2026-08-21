@@ -1,7 +1,4 @@
 import type { Request, Response } from "express";
-import { sendBotPublicMessage, sendTelegramMessage } from "../config/telegram";
-import { fetchVideoStats } from "../helpers/FetchVideoStats";
-import { adminNotify } from "../helpers/Notify";
 import { sendNotification } from "../helpers/sendNotification";
 import { ServiceProviderRegModel, UserModel } from "../models/AuthModels";
 import { notificationModel } from "../models/NotificationModel";
@@ -155,9 +152,6 @@ export const PostNewArticle = async (req: Request, res: Response) => {
 			sendToLabel: `Followers of ${name}`,
 		});
 
-		await adminNotify(
-			`${newArticle.authorData?.name} has uploaded a new article under category ${newArticle.category}`,
-		);
 
 		// PDF-attached articles get a `?t=` share token so the Telegram link
 		// works inside Telegram's in-app browser (which carries no NextAuth
@@ -190,7 +184,6 @@ export const PostNewArticle = async (req: Request, res: Response) => {
 		// Sending the bot message with the optional image
 
 		if (shareWith.includes("all")) {
-			await sendBotPublicMessage(botMessage, newArticle.image);
 		}
 		if (shareWith.includes("subscribers") && shareWithPlans.length > 0) {
 			const plans = await ServiceModel.find({ _id: { $in: shareWithPlans } });
@@ -209,7 +202,6 @@ export const PostNewArticle = async (req: Request, res: Response) => {
 				});
 
 				if (plan?.telegramChannelId) {
-					await sendTelegramMessage(plan?.telegramChannelId, botMessage);
 				}
 			}
 		}
@@ -391,7 +383,6 @@ export const PostNewVideo = async (req: Request, res: Response) => {
 
 		const scheduledDateTime = new Date(combinedDateTime).toISOString();
 
-		const stats = await fetchVideoStats(videoID);
 
 		const newVideo = new VideoModel({
 			authorData: {
@@ -410,7 +401,6 @@ export const PostNewVideo = async (req: Request, res: Response) => {
 			disclaimer,
 			language,
 			videoID,
-			videoStats: stats,
 		});
 
 		await newVideo.save();
@@ -435,9 +425,6 @@ export const PostNewVideo = async (req: Request, res: Response) => {
 			sendToLabel: `Followers of ${name}`,
 		});
 
-		await adminNotify(
-			`${newVideo.authorData?.name} has uploaded a new Video under category ${newVideo.category}`,
-		);
 
 		const videoLink = `https://tradeboxlive.com/view/video/${newVideo.videoID}`;
 
@@ -451,7 +438,6 @@ Watch Video: (${videoLink})
 
 		const thumbnailUrl = `https://img.youtube.com/vi/${newVideo.videoID}/0.jpg`;
 
-		await sendBotPublicMessage(botMessage, thumbnailUrl);
 
 		return res.status(200).json({ success: true, message: "Video Saved" });
 	} catch (error) {
@@ -663,9 +649,6 @@ export const PostNewPodcast = async (req: Request, res: Response) => {
 			sendToLabel: `Followers of ${name}`,
 		});
 
-		await adminNotify(
-			`${newPodcast.authorData?.name} has uploaded a new podcast under category ${newPodcast.category}`,
-		);
 
 		// Fetch thumbnail URL from YouTube
 		const thumbnailUrl = `https://img.youtube.com/vi/${videoID}/0.jpg`;
@@ -680,7 +663,6 @@ Listen to Podcast: ${link}
   `;
 
 		// Send bot public message with the thumbnail URL
-		await sendBotPublicMessage(botMessage, thumbnailUrl);
 
 		return res.status(200).json({ success: true, message: "Podcast Saved" });
 	} catch (error) {
@@ -915,9 +897,6 @@ export const PostNewEvent = async (req: Request, res: Response) => {
 				{ new: true },
 			);
 
-			await adminNotify(
-				`${newEvent.authorData?.name} has uploaded a new event under category ${newEvent.category}, please approve!`,
-			);
 
 			const sp = await ServiceProviderRegModel.findById(author.id);
 			const followersArray = (sp?.stats?.Followers || []).map(String);

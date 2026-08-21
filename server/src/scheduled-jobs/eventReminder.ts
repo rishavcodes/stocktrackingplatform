@@ -5,7 +5,6 @@ import { EventModel, EventRegistrationModel } from "../models/PostModels";
 import { UserModel } from "../models/AuthModels";
 import { notificationModel } from "../models/NotificationModel";
 import { sendNotification } from "../helpers/sendNotification";
-import { mailQueue } from "../queues/MailQueues";
 
 /**
  * Normalize date to start of day (avoids timezone bugs)
@@ -62,24 +61,6 @@ export const startEventReminder = () => {
             const user = await UserModel.findById(reg.userId);
             if (!user?.email) continue;
 
-            await mailQueue.add(
-              user.email,
-              {
-                mailOptions: {
-                  from: process.env.EMAIL,
-                  to: user.email,
-                  subject: `Event Reminder: ${event.title}`,
-                  html: `
-                    <p>Hi ${user.name},</p>
-                    <p><b>${message}</b></p>
-                    <p><strong>Date:</strong> ${eventDate.toDateString()}</p>
-                    <p><strong>Location:</strong> ${event.location ?? "N/A"}</p>
-                    <p>Regards,<br/>Trade Box Fintech Solutions</p>
-                  `,
-                },
-              },
-              { removeOnComplete: true, removeOnFail: true }
-            );
 
             await sendNotification({
               recipientIds: [user._id.toString()],

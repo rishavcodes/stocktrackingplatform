@@ -18,7 +18,7 @@ import {
 	isReadOnlySubProfile,
 	type PermissionKey,
 } from "@/lib/subProfilePermissions";
-import { Menu, TrendingUp, User as UserIcon, X } from "lucide-react";
+import { Menu, TrendingUp, X } from "lucide-react";
 
 // permKey tags each sidebar item with the permission module it depends on.
 // Items without a permKey are always shown.
@@ -37,13 +37,6 @@ const ProviderSideBar: ProviderNavItem[] = [
 		base: "/dashboard/serviceprovider/recommendations",
 		permKey: "recommendation",
 		Icon: TrendingUp,
-	},
-	{
-		title: "Profile",
-		href: "/dashboard/serviceprovider/myprofile",
-		base: "/dashboard/serviceprovider/myprofile",
-		permKey: "profile",
-		Icon: UserIcon,
 	},
 ];
 
