@@ -137,6 +137,17 @@ export default withAuth(
     }
 
     /* -------------------------------------------------
+       0c️⃣ ROOT → PROVIDER SIGNIN
+       There is no landing page any more. Runs after the subdomain
+       blocks above so branded hosts keep their own `/` rewrites.
+       Authenticated visitors fall through to 2️⃣ below, which bounces
+       them from /auth/* to their own dashboard.
+    -------------------------------------------------- */
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/auth/provider/signin", req.url));
+    }
+
+    /* -------------------------------------------------
        1️⃣ HANDLE EXPIRED TOKEN → ROLE-AWARE REDIRECT
     -------------------------------------------------- */
     if (tokenExp && Date.now() / 1000 > tokenExp) {
@@ -386,7 +397,7 @@ export default withAuth(
         !!token,
     },
     pages: {
-      signIn: "/", // fallback only
+      signIn: "/auth/provider/signin", // fallback only
     },
   }
 );

@@ -10,7 +10,6 @@ import Input from "./Inputs/Input";
 import CategoryInput from "./Inputs/CategoryInput";
 import { EventCard } from "./Cards/EventCard/EventCard";
 import MultiSelect from "./MultiSelect/MultiSelect";
-import Hero from "./Home/Hero/Hero";
 import TrendingArticles from "./Home/TrendingArticles/TrendingArticles";
 import EventsAndVideos from "./Home/EventsAndVideos/EventsAndVideos";
 import SubProfileSectioncard from "./SubProfileSectionCard/SubProfileSectioncard";
@@ -98,7 +97,6 @@ export {
   CategoryInput,
   EventCard,
   MultiSelect,
-  Hero,
   OurFamily,
   TrendingArticles,
   EventsAndVideos,

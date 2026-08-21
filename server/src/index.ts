@@ -146,27 +146,25 @@ app.use((req, res, next) => {
 // ports stay permitted for dev. Unknown origins are rejected — the prior
 // `!origin || allowedOrigins` check effectively allowed everything whenever
 // NEXTAUTH_URL was set, which defeated CORS.
-const BASE_DOMAIN = "tradeboxlive.com";
+const ALLOWED_ORIGINS = [
+  "https://stocktrackingplatform.vercel.app",
+  "http://localhost:3000",
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // server-to-server, curl, healthchecks
-      try {
-        const { hostname } = new URL(origin);
-        if (hostname === BASE_DOMAIN || hostname.endsWith(`.${BASE_DOMAIN}`)) {
-          return callback(null, true);
-        }
-        if (hostname === "localhost" || hostname === "127.0.0.1") {
-          return callback(null, true);
-        }
-      } catch {
-        // fall through to reject
+      // Server-to-server, curl, healthchecks
+      if (!origin) return callback(null, true);
+
+      if (ALLOWED_ORIGINS.includes(origin)) {
+        return callback(null, true);
       }
+
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-  })
+  }),
 );
 // app.use(cors())
 app.use(express.json({ limit: "100mb" }));
