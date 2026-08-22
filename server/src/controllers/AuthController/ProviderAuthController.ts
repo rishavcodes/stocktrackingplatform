@@ -37,10 +37,6 @@ export const ProviderSignUp = async (req: Request, res: Response) => {
     companyName,
   } = parsedBody;
 
-  const files = req.files as {
-    [fieldname: string]: Express.MulterS3.File[];
-  };
-
   try {
     /* ---------------- DUPLICATE CHECKS ---------------- */
 
@@ -97,14 +93,6 @@ export const ProviderSignUp = async (req: Request, res: Response) => {
       state,
       regNumber,
 
-      // FILES
-      certificate: files?.certificate ? files.certificate[0].location : "",
-
-      CompanyCertificate: files?.CompanyCertificate
-        ? files.CompanyCertificate[0].location
-        : "",
-
-      profileUrl: files?.profilePic ? files.profilePic[0].location : "",
 
       // SYSTEM FIELDS
       role: "provider",

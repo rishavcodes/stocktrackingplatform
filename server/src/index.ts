@@ -1,5 +1,5 @@
 // Side-effect import — runs dotenv.config() synchronously before any other
-// import below evaluates. Several helpers (multer-s3, S3 client, the Angel
+// import below evaluates. Several helpers (the Angel
 // broker SDK, etc.) reference process.env at module load, so a deferred
 // `dotenv.config()` further down used to crash with "bucket is required"
 // the moment one of those modules was pulled into the first import batch.
@@ -12,7 +12,6 @@ import axios from "axios";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
-import multer from "multer";
 import helmet from "helmet";
 import http from "http";
 import { Server } from "socket.io";
@@ -21,7 +20,6 @@ import { initializeSmartAPISession } from "./config/smart-api";
 import {
   updateLiveScoreCardDashboard,
   updateLiveScoreCardForSubscribed,
-  updateLiveScoreCardForMarketplace,
 } from "./controllers/ScoreCardController";
 import { initMarketDataService } from "./helpers/marketData";
 import {
@@ -37,9 +35,7 @@ import {
 import AuthRoutes from "./routes/AuthRoutes";
 import HealthCheck from "./routes/HealthCheck";
 import HomeDataRoutes from "./routes/HomeDataRoutes";
-import MarketplaceRoutes from "./routes/MarketplaceRoutes";
 import MarketDataRoutes from "./routes/MarketDataRoutes";
-import PostContentRoutes from "./routes/PostContentRoutes";
 import ScoreCardRoutes from "./routes/ScoreCardRoutes";
 import ScriptMasterRoutes from "./routes/ScriptMasterRoutes";
 import ServicesRoutes from "./routes/ServicesRoutes";
@@ -137,12 +133,10 @@ app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 app.use("/health", HealthCheck.routes);
 
 app.use("/api/auth", AuthRoutes.routes);
-app.use("/api/post", PostContentRoutes.routes);
 app.use("/api/data", HomeDataRoutes.routes);
 app.use("/api/scorecard", ScoreCardRoutes.routes);
 app.use("/api/scripts", ScriptMasterRoutes.routes);
 app.use("/api/services", ServicesRoutes.routes);
-app.use("/api/marketplace", MarketplaceRoutes.routes);
 app.use("/api/market-data", MarketDataRoutes.routes);
 
 const server = http.createServer(app);
@@ -172,13 +166,6 @@ app.get("/debug/ip", async (req, res) => {
 // CORS-aware status codes so the UI can show a useful toast.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof multer.MulterError) {
-    return res.status(400).json({
-      success: false,
-      code: err.code,
-      message: err.message,
-    });
-  }
   if (err && typeof err.message === "string" && /must be a \.pdf/i.test(err.message)) {
     return res.status(415).json({
       success: false,
@@ -208,10 +195,6 @@ io.of("/scorecardlive/serviceproviderdashboard").on("connection", (socket) => {
 
 io.of("/scorecardlive/forsubscribed").on("connection", (socket) => {
   updateLiveScoreCardForSubscribed(socket);
-});
-
-io.of("/scorecardlive/marketplace").on("connection", (socket) => {
-  updateLiveScoreCardForMarketplace(socket);
 });
 
 const serverAdapter = new ExpressAdapter();

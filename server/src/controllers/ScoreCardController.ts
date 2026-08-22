@@ -19,7 +19,6 @@ import {
 import { getProfileFamilyIds } from "../utils/profileHelpers";
 import { isAnyMarketOpen } from "../utils/marketHours";
 import { MarketplaceModel } from "../models/MarketplaceModel";
-import { getAllRelevantRAIds } from "./MarketplaceController";
 import { publishScorecardChange, onScorecardChange } from "../services/ScorecardPubSub";
 import { attachServiceNamesCached } from "../services/ServiceNameCache";
 import { fetchCMP } from "../helpers/ScoreCardData";
@@ -75,7 +74,10 @@ export const createScoreCard = async (req: Request, res: Response) => {
   ];
 
   try {
-    const parsedBody = JSON.parse(req.body.data);
+    // The create form posts JSON directly. Older clients wrapped the payload
+    // in a multipart "data" field, so accept that shape too.
+    const parsedBody =
+      typeof req.body?.data === "string" ? JSON.parse(req.body.data) : req.body;
 
     const allElementsPresent = expectedKeys.every((key) =>
       parsedBody.hasOwnProperty(key)
@@ -87,11 +89,6 @@ export const createScoreCard = async (req: Request, res: Response) => {
         message: "All fields are required",
       });
 
-    const files = req.files as {
-      [fieldname: string]: Express.MulterS3.File[];
-    };
-
-    const recommendationPDF = files?.["recommendationPDF"]?.[0]?.location;
 
     const {
       name,
@@ -283,7 +280,6 @@ export const createScoreCard = async (req: Request, res: Response) => {
 
       ...(notes && { notes }),
       ...(link && { link }),
-      ...(recommendationPDF && { recommendationPDF }),
 
       lotsize,
       triggerType,
@@ -306,7 +302,7 @@ export const createScoreCard = async (req: Request, res: Response) => {
 
     /* ---------------- TELEGRAM ---------------- */
 
-    if (shareWith.includes("subscribers") && shareWithPlans.length > 0) {
+    if (shareWith?.includes("subscribers") && shareWithPlans?.length) {
       const plans = await ServiceModel.find({
         _id: { $in: shareWithPlans },
       });
@@ -1853,111 +1849,6 @@ export const updateLiveScoreCardForSubscribed = async (socket: Socket) => {
   });
 };
 
-export const updateLiveScoreCardForMarketplace = async (socket: Socket) => {
-  socket.on("details", async ({ marketplaceId }) => {
-    if (!marketplaceId) return;
-
-    let liveInterval: NodeJS.Timeout | null = null;
-    let unsubPubSub: (() => void) | null = null;
-
-    try {
-      console.log(`[Marketplace] Socket connected, marketplaceId=${marketplaceId}`);
-
-      const marketplace = await MarketplaceModel.findById(marketplaceId).lean();
-      if (!marketplace) {
-        console.log(`[Marketplace] Marketplace not found: ${marketplaceId}`);
-        return;
-      }
-
-      const activeRaIds = ((marketplace as any).activeRaIds || []).map(
-        (id: any) => id.toString()
-      );
-      const allAuthorIds = await getAllRelevantRAIds(activeRaIds);
-      const authorSet = new Set(allAuthorIds);
-
-      console.log(`[Marketplace] Resolved ${allAuthorIds.length} author IDs from ${activeRaIds.length} active RAs`);
-
-      const marketplaceObjId = new mongoose.Types.ObjectId(marketplaceId);
-
-      const closedTradesRaw = await ScoreCardModel.find({
-        "authorData.id": { $in: allAuthorIds },
-        shareWithMarketplaces: marketplaceObjId,
-        status: "closed",
-      })
-        .sort({ createdAt: -1 })
-        .limit(500)
-        .lean();
-
-      let closedTrades = closedTradesRaw;
-
-      console.log(`[Marketplace] Initial load: ${closedTrades.length} closed trades from MongoDB`);
-
-      const emitScorecardFromRedis = async () => {
-        try {
-          const { trades: openTrades, total: totalOpen } =
-            await getOpenTradesByMarketplace(marketplaceId, allAuthorIds);
-
-          const allRecs = [...openTrades, ...closedTrades];
-          allRecs.sort((a: any, b: any) => {
-            const dateA = new Date(a.createdAt || 0).getTime();
-            const dateB = new Date(b.createdAt || 0).getTime();
-            return dateB - dateA;
-          });
-
-          socket.emit("scorecard", {
-            recommendations: allRecs,
-            total: totalOpen + closedTrades.length,
-          });
-        } catch (err) {
-          console.error("[Marketplace] Redis emit error:", err);
-        }
-      };
-
-      await emitScorecardFromRedis();
-
-      liveInterval = setInterval(emitScorecardFromRedis, 1500);
-
-      unsubPubSub = onScorecardChange(async (event) => {
-        const isRelevantByMarketplace =
-          event.marketplaceIds?.includes(marketplaceId);
-        const isRelevantByAuthor = authorSet.has(event.authorId);
-
-        if (!isRelevantByMarketplace && !isRelevantByAuthor) return;
-
-        if (
-          event.type === "closed" ||
-          event.type === "manual_exit" ||
-          event.type === "deleted" ||
-          event.type === "created"
-        ) {
-          const freshClosed = await ScoreCardModel.find({
-            "authorData.id": { $in: allAuthorIds },
-            shareWithMarketplaces: marketplaceObjId,
-            status: "closed",
-          })
-            .sort({ createdAt: -1 })
-            .limit(500)
-            .lean();
-
-          closedTrades = freshClosed;
-        }
-
-        await emitScorecardFromRedis();
-      });
-
-      socket.on("disconnect", () => {
-        console.log(`[Marketplace] Socket disconnected, marketplaceId=${marketplaceId}`);
-        if (liveInterval) clearInterval(liveInterval);
-        if (unsubPubSub) unsubPubSub();
-      });
-    } catch (error) {
-      console.error("[Marketplace] Setup error:", error);
-      if (liveInterval) clearInterval(liveInterval);
-      if (unsubPubSub) unsubPubSub();
-    }
-  });
-};
-
 export const deleteTrade = async (req: Request, res: Response) => {
   if (!req.body.id) {
     return res.status(400).json({
@@ -2308,7 +2199,6 @@ export const fetchRealTimeOpenScorecardsForToday = async (socket: Socket) => {
  */
 
 import { generateRationalPDF } from "../utils/generateRationalPDF";
-import { uploadFileToS3FromBuffer } from "../utils/s3Upload";
 import axios from "axios";
 import { TradeboxPlansModel, OrderModel } from "../models/TransactionModels";
 import mongoose from "mongoose";

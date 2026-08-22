@@ -54,26 +54,6 @@ export const PostNewService = async (req: Request, res: Response) => {
 
 		const { id, telegramConfig } = parsedBody;
 
-		const files = req.files as { [fieldname: string]: Express.MulterS3.File[] };
-
-		const bannerFile = files?.bannerURL?.[0]; // Get banner image
-		const tncFile = files?.tncFile?.[0]; // Get TnC PDF
-
-		if (!bannerFile) {
-			return res
-				.status(400)
-				.json({ success: false, message: "file not found" });
-		}
-
-		if (!tncFile) {
-			return res
-				.status(400)
-				.json({ success: false, message: "Terms & Conditions PDF not found" });
-		}
-
-		//  console.log("Banner URL:", bannerFile.location);
-		//  console.log("TnC PDF URL:", tncFile.location);
-
 		const {
       name,
       email,
@@ -167,7 +147,7 @@ export const PostNewService = async (req: Request, res: Response) => {
       },
       title,
       description,
-      tncFileURL: tncFile.location,
+      tncFileURL: parsedBody.tncFileURL ?? "",
       pricingPlans:
 				serviceType === "normal" ? normalizedPricingPlans : undefined, // Only include for normal services
       faqs,
@@ -185,7 +165,7 @@ export const PostNewService = async (req: Request, res: Response) => {
       Documents,
       keyFeatures,
       bonusFeatures,
-      bannerURL: bannerFile.location,
+      bannerURL: parsedBody.bannerURL ?? "",
       // NEW: Initialize Telegram fields
       telegramChannelId: telegramConfig?.channelId || null,
       telegramChannelAccessHash: null,
@@ -236,17 +216,6 @@ export const UpdateService = async (req: Request, res: Response) => {
 		}
 
 		const parsedBody = JSON.parse(req.body.data);
-		const files = req.files as { [fieldname: string]: Express.MulterS3.File[] };
-
-		// ✅ Replace file URLs if new files uploaded
-		if (files?.bannerURL?.[0]) {
-			parsedBody.bannerURL = files.bannerURL[0].location;
-		}
-
-		if (files?.tncFile?.[0]) {
-			parsedBody.tncFileURL = files.tncFile[0].location;
-		}
-
 		// ✅ Fix date parsing
 		const inceptionDate = new Date(parsedBody.inceptionDate);
 		const AsOn = new Date(parsedBody.AsOn);

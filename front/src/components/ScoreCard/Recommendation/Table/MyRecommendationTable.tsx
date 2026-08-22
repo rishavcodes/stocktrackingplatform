@@ -390,7 +390,6 @@ export function MyRecommendationTable<TData, TValue>({
         "Shared with Plans": getPlanNames(item?.shareWithPlans),
         "Rational": item.rational ?? "--",
         "Link": item.link,
-        "PDF/Chart": item.recommendationPDF ? item.recommendationPDF : "--",
       };
     });
 

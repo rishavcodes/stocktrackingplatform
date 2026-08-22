@@ -3,24 +3,15 @@ import {
   CheckSquare,
   ChevronDown,
   ChevronRight,
-  FileText,
-  Link as LinkIcon,
   Loader2,
-  Plus,
   RefreshCw,
-  Settings2,
   Square,
-  Target,
-  Trash2,
-  TrendingUp,
-  Upload,
-  Users
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, PlansListSelect } from "@/components";
+import { Input } from "@/components";
 import { isReadOnlySubProfile } from "@/lib/subProfilePermissions";
 import { KeyboardFormProvider, useKeyboardField, useKeyboardForm } from "@/lib/keyboardForm";
 import EntryTypeInput from "@/components/Inputs/EntryTypeInput";
@@ -30,11 +21,9 @@ import InstrumentInput from "@/components/Inputs/InstrumentInput";
 import OptionTypeInput from "@/components/Inputs/OptionTypeInput";
 import SegmentInput from "@/components/Inputs/SegmentsInput";
 import StrikeInput from "@/components/Inputs/StrikeInput";
-import MarketPlaceSelect from "@/components/MultiSelect/MarketPlaceSelect";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import ScriptNameInput from "@/components/Inputs/ScriptNameInput";
-import PdfIcon from "@/icons/PdfIcon";
 import {
   calculateRatio,
   calculateRiskRewardInNumbers,
@@ -42,7 +31,6 @@ import {
 import { parseExpiry, expiryToInputMax } from "@/lib/parseExpiry";
 import type { RootState } from "@/store/rootReducer";
 import { setDropDownState } from "@/store/slices/ScoreCardData";
-import QuickMessageBroadcast from "@/components/ServiceProvider/QuickMessageBroadcast";
 
 type TargetItem = {
   price: number;
@@ -74,7 +62,6 @@ export type TradeDataProps = {
   riskRewardRatio: string;
   notes: string;
   link: string;
-  recommendationPDF: File | null;
   lotsize: string;
 };
 
@@ -309,25 +296,18 @@ export default function CreateData() {
     riskRewardRatio: "",
     notes: "",
     link: "",
-    recommendationPDF: null,
     lotsize: "",
   });
 
   const [errors, setErrors] = useState<TradeFormErrors>({});
   const [rawValues, setRawValues] = useState<Record<string, string>>({});
-  const [shareWith, setShareWith] = useState<string[]>(["subscribers"]);
-  const [shareWithPlans, setShareWithPlans] = useState<string[]>([]);
   const [isCMPChecked, setIsCMPChecked] = useState(false);
-  const [plansListKey, setPlansListKey] = useState(0);
   const [validityOption, setValidityOption] = useState("intraday");
   const [isValidityDropdownOpen, setIsValidityDropdownOpen] = useState(false);
   const validityDropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
 
-  const [shareWithMarketplaces, setShareWithMarketplaces] = useState<string[]>(
-    [],
-  );
 
   const isDropdownOpen = useSelector((state: RootState) => state.ScoreCardData);
   const [isCustomDate, setIsCustomDate] = useState(false);
@@ -740,17 +720,6 @@ export default function CreateData() {
     }
   }, [tradeData.scriptname, tradeData.entryPrice, dispatch]);
 
-  function recommendationPDFChangeHandler(event: ChangeEvent<HTMLInputElement>) {
-    const { files } = event.target;
-
-    if (files && files.length > 0) {
-      const file = files[0];
-      setTradeData((prev) => ({ ...prev, recommendationPDF: file }));
-    } else {
-      console.log("file not found");
-    }
-  }
-
   /* ---------------- TARGET HANDLERS ---------------- */
 
   const addTarget = () => {
@@ -917,16 +886,6 @@ export default function CreateData() {
       return;
     }
 
-    if (tradeData.recommendationPDF && tradeData.recommendationPDF.size > 6291456) {
-      toast({
-        title: "Max File Size Exceeds",
-        description: "Please select files under 5mb",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
     if (tradeData.entryType === "") {
       toast({
         title: "Error",
@@ -941,16 +900,6 @@ export default function CreateData() {
       toast({
         title: "Error",
         description: "Please select entry validity",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    if (shareWith.length === 0) {
-      toast({
-        title: "Error",
-        description: "Please select at least one value for share with",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -1048,8 +997,6 @@ export default function CreateData() {
       // so the backend doesn't see phantom 0-price targets.
       targets: tradeData.targets.filter((t) => Number(t?.price) > 0),
       exchange: exch,
-      shareWith,
-      shareWithPlans,
       ltp: tradeData.entryPrice, // Current market price (CMP)
       rate: isCMPChecked ? tradeData.entryPrice : tradeData.rate, // Manual entry rate
       validity: tradeData.validity, // "YYYY-MM-DD"; backend sets the IST market-close time
@@ -1062,22 +1009,17 @@ export default function CreateData() {
       ),
       notes: tradeData.notes,
       link: tradeData.link,
-      shareWithMarketplaces: shareWithMarketplaces,
       isCMPChecked: isCMPChecked,
     };
 
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(data));
-    if (tradeData.recommendationPDF) {
-      formData.append("recommendationPDF", tradeData.recommendationPDF);
-    }
 
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/scorecard/create`,
         {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
         }
       );
 
@@ -1244,7 +1186,6 @@ export default function CreateData() {
   // CORRECTED resetForm function
   function resetForm() {
     console.log("Resetting form...");
-    setShareWithPlans([]);
     setTradeData({
       exchange: "",
       segment: "",
@@ -1265,13 +1206,9 @@ export default function CreateData() {
       riskRewardRatio: "",
       notes: "",
       link: "",
-      recommendationPDF: null,
       lotsize: "",
     });
 
-    setShareWith(["subscribers"]);
-    setShareWithPlans([]);
-    setShareWithMarketplaces([]);
     setIsCMPChecked(false);
     setIsCustomDate(false);
     setValidityOption("intraday");
@@ -1281,7 +1218,6 @@ export default function CreateData() {
     setMarketStatus({ isOpen: true, message: "" });
 
     dispatch(setDropDownState(false));
-    setPlansListKey(prev => prev + 1);
   }
 
   const handleRefreshCMP = async () => {
@@ -1595,7 +1531,7 @@ export default function CreateData() {
           <div className="border-t border-gray-200 dark:border-gray-700"></div>
           {/* Trade Configuration */}
           <div className="px-6 py-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Validity */}
               <div className="relative" ref={validityDropdownRef}>
                 <label className="block text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
@@ -1707,31 +1643,12 @@ export default function CreateData() {
                 )}
               </div>
 
-              {/* Share with Plans */}
-              <div className="">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider block">
-                  Share with Plans
-                </label>
-                <PlansListSelect
-                  key={plansListKey}
-                  onChange={setShareWithPlans}
-                  id={session.data?.user.id!}
-                />
-              </div>
-
-              {/* Marketplaces */}
-              <div className="">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider block">
-                  Select Marketplaces
-                </label>
-                <MarketPlaceSelect key={plansListKey} onChange={setShareWithMarketplaces} />
-              </div>
             </div>
           </div>
           <div className="border-t border-gray-200 dark:border-gray-700"></div>
           {/* Additional Information */}
           <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Notes */}
               <div className="">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1747,42 +1664,6 @@ export default function CreateData() {
                 />
               </div>
 
-              {/* PDF */}
-              <div className="space-y-4">
-
-                {/* PDF Upload */}
-                <div className="">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                    <Upload className="w-4 h-4" />
-                    Recommendation File
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-                      onChange={recommendationPDFChangeHandler}
-                      className="hidden"
-                      id="pdf-upload"
-                    />
-                    <label
-                      htmlFor="pdf-upload"
-                      className="flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-600 dark:text-gray-400 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-all"
-                    >
-                      {tradeData.recommendationPDF ? (
-                        <span className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                          <FileText className="w-4 h-4" />
-                          {tradeData.recommendationPDF.name}
-                        </span>
-                      ) : (
-                        <>
-                          <Upload className="w-4 h-4" />
-                          Upload file (PDF, Image, Doc - max 5MB)
-                        </>
-                      )}
-                    </label>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -1878,13 +1759,6 @@ export default function CreateData() {
         </div>
       </form>
       </KeyboardFormProvider>
-
-      {/* Quick Message broadcast — sits inline below the create-recommendation
-          form so the RA can send a companion note to subscribers' Telegram
-          channels right after posting a trade. */}
-      <div className="max-w-7xl mx-auto px-4 pb-10">
-        <QuickMessageBroadcast />
-      </div>
     </div>
   );
 }

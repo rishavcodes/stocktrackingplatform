@@ -44,7 +44,7 @@ export function TradeDetailsModal({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { data: session } = useSession();
   const [localNotes, setLocalNotes] = React.useState<any[]>([]);
-  // Heavy fields (rational, notes, link, recommendationPDF, rationalPDF,
+  // Heavy fields (rational, notes, link, rationalPDF,
   // rationalText) were stripped from the live socket payload to keep
   // per-tick bandwidth tight. Pull them on demand the first time the
   // modal opens for a given trade and merge over the lightweight `trade`
@@ -497,7 +497,7 @@ export function TradeDetailsModal({
                     Loading…
                   </div>
                 </div>
-              ) : (t.link || t.recommendationPDF) ? (
+              ) : t.link ? (
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
@@ -518,21 +518,6 @@ export function TradeDetailsModal({
                         <div className="flex-1">
                           <p className="font-medium text-gray-800 dark:text-white">Reference Link</p>
                           <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{t.link}</p>
-                        </div>
-                      </a>
-                    )}
-
-                    {t.recommendationPDF && (
-                      <a
-                        href={t.recommendationPDF}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 p-3 bg-white dark:bg-slate-800 border rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-                      >
-                        <Download className="h-4 w-4 text-green-500" />
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-800 dark:text-white">Chart/PDF</p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400">View recommendation document</p>
                         </div>
                       </a>
                     )}

@@ -92,16 +92,12 @@ const ScoreCardSchema = new mongoose.Schema(
 // as a 10-second cold start on populated collections).
 ScoreCardSchema.index({ "authorData.id": 1, status: 1, createdAt: -1 });
 
-// Subscribed-user dashboard (`updateLiveScoreCardForSubscribed`) hits
-// `find({ shareWithPlans: { $in: ids }, shareWith: "subscribers", status: "closed" })
-//    .sort({ createdAt: -1 })`. Lead with shareWithPlans (the most selective
-// $in filter), then the two equality predicates, then the sort.
-ScoreCardSchema.index({ shareWithPlans: 1, shareWith: 1, status: 1, createdAt: -1 });
-
-// Marketplace dashboard (`updateLiveScoreCardForMarketplace`) filters by
-// shareWithMarketplaces + status, ordered by createdAt. Mirrors the SP
-// dashboard index but keyed on the marketplace ObjectId array.
-ScoreCardSchema.index({ shareWithMarketplaces: 1, status: 1, createdAt: -1 });
+// NOTE: there used to be a compound index on { shareWithPlans, shareWith, ... }.
+// MongoDB cannot index two array fields in one compound index ("cannot index
+// parallel arrays"), and since both paths default to [], EVERY insert failed
+// with error 171. Both fields are also no longer written by the create form.
+// Index only the single array path that remains queryable.
+ScoreCardSchema.index({ shareWithPlans: 1, status: 1, createdAt: -1 });
 
 export const ScoreCardModel = mongoose.model("scorecard", ScoreCardSchema);
 

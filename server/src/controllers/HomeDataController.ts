@@ -23,7 +23,7 @@ import { PackageModel } from "../models/PackageModel";
 import {
   sanitizeArticleForResponse,
   sanitizeArticleListForResponse,
-} from "./PostContentController";
+} from "../helpers/sanitizeArticle";
 
 export const GetALLServiceProviders = async (req: Request, res: Response) => {
   try {

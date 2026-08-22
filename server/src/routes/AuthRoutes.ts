@@ -15,7 +15,6 @@ import {
   checkPageRefreshOtp,
   requestMobileOTP,
 } from "../controllers/AuthController/OTPController";
-import { upload } from "../helpers/providerRegFileHelper";
 import { verifyUserRATokenMiddleware } from "../middleware/AdminSecurity";
 
 const router = Router();
@@ -23,18 +22,7 @@ const router = Router();
 router.post("/signin", loginHandler);
 // router.post("/admin-login", adminLoginHandler)
 
-router.post(
-  "/provider/signup",
-  upload.fields([
-    { name: "certificate" },
-    { name: "CompanyCertificate" },
-    { name: "profilePic" },
-    { name: "companyLogo" },
-    { name: "aadhar" },
-    { name: "PAN" },
-  ]),
-  ProviderSignUp
-);
+router.post("/provider/signup", ProviderSignUp);
 
 
 router.get("/checkforuser", checkForUser);

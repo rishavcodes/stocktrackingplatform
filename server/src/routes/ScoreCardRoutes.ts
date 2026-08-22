@@ -15,8 +15,6 @@ import {
   modifyScoreCard,
   updateNotes,
 } from "../controllers/ScoreCardController";
-import { uploadPosts } from "../helpers/postContentFileHelper";
-import { upload } from "../helpers/providerRegFileHelper";
 
 const router = Router();
 
@@ -36,7 +34,7 @@ router.get("/:scorecardId/details", getScorecardDetails);
 
 router.post("/getcmp", GetCmp);
 router.post("/getcmp/table", getCMPForTable);
-router.post("/create", uploadPosts.fields([{ name: "recommendationPDF" }]), createScoreCard);
+router.post("/create", createScoreCard);
 router.post("/modify/:scorecardId", modifyScoreCard);
 // In your routes file
 router.post("/:scorecardId/notes", updateNotes);

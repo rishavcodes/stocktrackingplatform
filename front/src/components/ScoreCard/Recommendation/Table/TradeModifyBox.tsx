@@ -17,7 +17,6 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { useSession } from "next-auth/react";
 import PlansListSelect from "@/components/MultiSelect/PlansListSelect";
-import MarketPlaceSelect from "@/components/MultiSelect/MarketPlaceSelect";
 import { getEntryDisplay } from "./entryDisplay";
 import { expiryToInputMax, parseExpiry } from "@/lib/parseExpiry";
 
@@ -586,15 +585,6 @@ export default function TradeModifyConfirmationBox({
                       onChange={setShareWithPlans}
                       id={session.data.user.id}
                       initialValues={trade.shareWithPlans}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-indigo-900 dark:text-indigo-100">
-                      Marketplaces
-                    </label>
-                    <MarketPlaceSelect
-                      onChange={setShareWithMarketplaces}
-                      initialValues={trade.shareWithMarketplaces}
                     />
                   </div>
                 </div>
